@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">AnList</string>
+    <string name="search_anime_hint">Search anime, manga, movie etc</string>
+    <string name="top_airing">Top Airing %d</string>
+    <string name="upcoming_year">Upcoming %d</string>
+    <string name="recommend">Recommend</string>
+    <string name="watch_trailer">Watch trailer</string>
+    <string name="synopsis">Synopsis</string>
+    <string name="character">Character</string>
+    <string name="review">Review</string>
+    <string name="genre">Genre</string>
+    <string name="rate">rate</string>
+    <string name="eps">eps</string>
+    <string name="premiered">premiered</string>
+    <string name="studio">studio</string>
+</resources>
