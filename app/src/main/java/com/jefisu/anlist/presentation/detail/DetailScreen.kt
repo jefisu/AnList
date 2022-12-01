@@ -1,7 +1,11 @@
 package com.jefisu.anlist.presentation.detail
 
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,6 +14,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -23,13 +28,18 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -45,7 +55,6 @@ import com.jefisu.anlist.R
 import com.jefisu.anlist.core.presentation.CustomIcon
 import com.jefisu.anlist.core.util.isOdd
 import com.jefisu.anlist.presentation.detail.components.CharacterInfo
-import com.jefisu.anlist.presentation.detail.components.ExpandableText
 import com.jefisu.anlist.presentation.detail.components.MainAnimeInfo
 import com.jefisu.anlist.presentation.detail.components.ReviewItem
 import com.jefisu.anlist.presentation.detail.components.TabsContent
@@ -53,17 +62,22 @@ import com.jefisu.anlist.presentation.detail.util.Anime
 import com.jefisu.anlist.presentation.detail.util.Character
 import com.jefisu.anlist.presentation.detail.util.Review
 import com.jefisu.anlist.presentation.detail.util.getGenresImage
-import com.jefisu.anlist.ui.theme.ChineseWhite
 import com.jefisu.anlist.ui.theme.DarkSlateBlue
 import com.jefisu.anlist.ui.theme.GraniteGray
 import com.jefisu.anlist.ui.theme.PhilippineGray
 import com.jefisu.anlist.ui.theme.defaultTextStyle
 
-@OptIn(ExperimentalPagerApi::class)
+@OptIn(ExperimentalPagerApi::class, ExperimentalAnimationApi::class)
 @Composable
 fun DetailScreen(
     anime: Anime
 ) {
+    var showAll by remember { mutableStateOf(false) }
+    val rotateIconAnim by animateFloatAsState(
+        targetValue = if (showAll) 90f else 270f,
+        animationSpec = tween(400)
+    )
+
     Box {
         Image(
             painter = painterResource(id = anime.imageBackground),
@@ -151,32 +165,34 @@ fun DetailScreen(
                 )
             }
             Spacer(modifier = Modifier.height(16.dp))
-            Column(
-                verticalArrangement = Arrangement.spacedBy(8.dp),
+            Text(
+                text = stringResource(R.string.synopsis),
+                style = defaultTextStyle,
+                color = DarkSlateBlue,
+                modifier = Modifier.align(Alignment.Start)
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = anime.synopsis,
+                fontSize = 10.sp,
+                color = GraniteGray,
+                lineHeight = 14.sp,
+                textAlign = TextAlign.Justify,
+                maxLines = if (showAll) Int.MAX_VALUE else 5,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.animateContentSize()
+            )
+            Spacer(modifier = Modifier.height(2.dp))
+            Icon(
+                imageVector = Icons.Default.ArrowBackIosNew,
+                contentDescription = null,
+                tint = GraniteGray,
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(ChineseWhite)
-                    .padding(vertical = 8.dp, horizontal = 16.dp)
-            ) {
-                Text(
-                    text = stringResource(R.string.synopsis),
-                    style = defaultTextStyle,
-                    color = DarkSlateBlue
-                )
-                ExpandableText(
-                    longText = anime.synopsis,
-                    minimizedMaxLines = 5,
-                    style = defaultTextStyle.copy(
-                        fontSize = 10.sp,
-                        color = GraniteGray,
-                        lineHeight = 14.sp,
-                        textAlign = TextAlign.Justify
-                    ),
-                    clickColor = DarkSlateBlue
-                )
-            }
-            Spacer(modifier = Modifier.height(16.dp))
+                    .size(16.dp)
+                    .graphicsLayer(rotationZ = rotateIconAnim)
+                    .clickable { showAll = !showAll }
+            )
+            Spacer(modifier = Modifier.height(8.dp))
             TabsContent(
                 pagerState = rememberPagerState(),
                 scope = rememberCoroutineScope(),
@@ -298,13 +314,13 @@ fun PreviewDetailScreen() {
             imageBackground = R.drawable.naruto_background,
             poster = R.drawable.naruto_poster,
             synopsis = "Demons that once almost destroyed the world, are revived by someone. To prevent the" +
-                    " world from being destroyed, the demon has to be sealed and the only one who can do it" +
-                    " is the shrine maiden Shion from the country of demons, who has two powers; one is sealing" +
-                    " demons and the other is predicting the deaths of humans. This time Naruto's mission is to" +
-                    " guard Shion, but she predicts Naruto's death. The only way to escape it, is to get away from Shion," +
-                    " which would leave her unguarded, then the demon, whose only goal is to kill Shion will do so, thus" +
-                    " meaning the end of the world. Naruto decides to challenge this \\\"prediction of death,\\\" but fails to " +
-                    "prove Shion's prediction wrong and supposedly dies in vain.\\n(Source: Wikipedia)",
+                " world from being destroyed, the demon has to be sealed and the only one who can do it" +
+                " is the shrine maiden Shion from the country of demons, who has two powers; one is sealing" +
+                " demons and the other is predicting the deaths of humans. This time Naruto's mission is to" +
+                " guard Shion, but she predicts Naruto's death. The only way to escape it, is to get away from Shion," +
+                " which would leave her unguarded, then the demon, whose only goal is to kill Shion will do so, thus" +
+                " meaning the end of the world. Naruto decides to challenge this \\\"prediction of death,\\\" but fails to " +
+                "prove Shion's prediction wrong and supposedly dies in vain.\\n(Source: Wikipedia)",
         )
     )
 }
