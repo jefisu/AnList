@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id "org.jlleitschuh.gradle.ktlint" version "11.0.0"
+    id 'org.jetbrains.kotlin.plugin.serialization' version '1.7.0'
 }
 
 android {
@@ -47,17 +48,17 @@ android {
     }
 }
 
-//tasks.getByPath("preBuild").dependsOn("ktlintFormat")
+tasks.getByPath("preBuild").dependsOn("ktlintFormat")
 
 ktlint {
     android = true
     ignoreFailures = true // project not build when this option is false
     disabledRules = ["final-newline", "no-wildcard-imports"]
-    reporters {
-        reporter "checkstyle"
-        reporter "plain"
-        reporter "sarif"
-    }
+    /*  reporters {
+          reporter "checkstyle"
+          reporter "plain"
+          reporter "sarif"
+      }*/
 }
 
 dependencies {
@@ -81,4 +82,7 @@ dependencies {
 
     // Accompanist - Google
     implementation "com.google.accompanist:accompanist-pager:0.23.1"
+
+    // Kotlin Serialization
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1"
 }
