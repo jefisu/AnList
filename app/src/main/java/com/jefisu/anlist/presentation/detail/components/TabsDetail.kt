@@ -165,6 +165,6 @@ fun PreviewTabsDetails() {
         scope = rememberCoroutineScope(),
         tabsName = listOf("Character", "Reviews", "Genre"),
         modifier = Modifier.fillMaxWidth(),
-        content = { page, tabs -> }
+        content = { _, _ -> }
     )
 }
