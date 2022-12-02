@@ -15,13 +15,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
@@ -49,11 +47,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.accompanist.flowlayout.FlowRow
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.rememberPagerState
 import com.jefisu.anlist.R
 import com.jefisu.anlist.core.presentation.CustomIcon
-import com.jefisu.anlist.core.util.isOdd
 import com.jefisu.anlist.presentation.detail.components.CharacterInfo
 import com.jefisu.anlist.presentation.detail.components.MainAnimeInfo
 import com.jefisu.anlist.presentation.detail.components.ReviewItem
@@ -78,7 +76,10 @@ fun DetailScreen(
         animationSpec = tween(400)
     )
 
-    Box {
+    val scrollState = rememberScrollState()
+    Box(
+        modifier = Modifier.verticalScroll(scrollState)
+    ) {
         Image(
             painter = painterResource(id = anime.imageBackground),
             contentDescription = null,
@@ -202,61 +203,47 @@ fun DetailScreen(
                     stringResource(R.string.genre)
                 ),
                 modifier = Modifier.fillMaxWidth(),
-                content = { currentPageIndex, tabs ->
-                    when (tabs[currentPageIndex]) {
+                content = { tab ->
+                    when (tab) {
                         stringResource(R.string.character) -> {
-                            LazyVerticalGrid(
-                                columns = GridCells.Fixed(2),
-                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                            FlowRow(
+                                mainAxisSpacing = 16.dp,
+                                crossAxisSpacing = 8.dp,
+                                modifier = Modifier.padding(bottom = 8.dp)
                             ) {
-                                items(anime.characters) { character ->
+                                anime.characters.forEach { character ->
                                     CharacterInfo(
                                         character = character,
-                                        modifier = Modifier.weight(1f)
+                                        modifier = Modifier.width(164.dp)
                                     )
-                                }
-                                if (isOdd(anime.characters.size)) {
-                                    item {
-                                        Box(modifier = Modifier)
-                                    }
-                                }
-                                item {
-                                    Spacer(modifier = Modifier.height(0.dp))
                                 }
                             }
                         }
                         stringResource(R.string.review) -> {
-                            LazyColumn {
-                                items(anime.reviews) {
+                            Column {
+                                anime.reviews.forEach {
                                     ReviewItem(
                                         review = it,
-                                        modifier = Modifier.fillMaxWidth()
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .animateContentSize()
                                     )
                                     Spacer(modifier = Modifier.height(12.dp))
                                 }
                             }
                         }
                         stringResource(R.string.genre) -> {
-                            val genres = getGenresImage(anime.genres)
-                            LazyVerticalGrid(
-                                columns = GridCells.Fixed(2),
-                                verticalArrangement = Arrangement.spacedBy(12.dp),
-                                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                            FlowRow(
+                                mainAxisSpacing = 12.dp,
+                                crossAxisSpacing = 12.dp,
+                                modifier = Modifier.padding(bottom = 12.dp)
                             ) {
-                                items(genres) {
+                                getGenresImage(anime.genres).forEach {
                                     Image(
                                         painter = painterResource(it),
                                         contentDescription = null,
                                         modifier = Modifier.height(94.dp)
                                     )
-                                }
-                                if (isOdd(anime.genres.size)) {
-                                    item {
-                                        Box(modifier = Modifier)
-                                    }
-                                }
-                                item {
-                                    Spacer(modifier = Modifier.height(0.dp))
                                 }
                             }
                         }

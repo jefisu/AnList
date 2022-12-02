@@ -13,11 +13,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
@@ -42,9 +42,9 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.accompanist.flowlayout.FlowRow
 import com.jefisu.anlist.R
 import com.jefisu.anlist.core.presentation.CustomIcon
-import com.jefisu.anlist.core.util.isOdd
 import com.jefisu.anlist.presentation.detail.util.Anime
 import com.jefisu.anlist.presentation.home.components.CustomCard
 import com.jefisu.anlist.presentation.home.util.IconSeasonSettings
@@ -70,7 +70,9 @@ fun HomeScreen(
     )
     var text by remember { mutableStateOf("") }
 
-    Box {
+    Box(
+        modifier = Modifier.verticalScroll(rememberScrollState())
+    ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -211,13 +213,12 @@ fun HomeScreen(
                     color = DarkSlateBlue
                 )
                 Spacer(modifier = Modifier.height(12.dp))
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(2),
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
-//                    userScrollEnabled = false
+                FlowRow(
+                    mainAxisSpacing = 16.dp,
+                    crossAxisSpacing = 16.dp,
+                    modifier = Modifier.padding(bottom = 12.dp)
                 ) {
-                    items(recommends) {
+                    recommends.forEach {
                         Image(
                             painter = painterResource(it),
                             contentDescription = null,
@@ -225,14 +226,6 @@ fun HomeScreen(
                                 .size(164.dp, 246.dp)
                                 .clip(RoundedCornerShape(12.dp))
                         )
-                    }
-                    if (isOdd(recommends.size)) {
-                        item {
-                            Box(modifier = Modifier)
-                        }
-                    }
-                    item {
-                        Spacer(modifier = Modifier.height(0.dp))
                     }
                 }
             }

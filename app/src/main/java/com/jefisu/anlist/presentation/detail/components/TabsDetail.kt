@@ -40,7 +40,7 @@ fun TabsContent(
     pagerState: PagerState,
     scope: CoroutineScope,
     tabsName: List<String>,
-    content: @Composable (Int, List<String>) -> Unit,
+    content: @Composable (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
@@ -53,7 +53,7 @@ fun TabsContent(
         HorizontalPager(
             count = tabsName.size,
             state = pagerState,
-            content = { content(currentPage, tabsName) }
+            content = { content(tabsName[currentPage]) }
         )
     }
 }
@@ -165,6 +165,6 @@ fun PreviewTabsDetails() {
         scope = rememberCoroutineScope(),
         tabsName = listOf("Character", "Reviews", "Genre"),
         modifier = Modifier.fillMaxWidth(),
-        content = { _, _ -> }
+        content = {}
     )
 }
