@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,6 +27,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Sort
 import androidx.compose.runtime.Composable
@@ -148,6 +150,18 @@ fun HomeScreen(
                                 tint = Gray,
                                 modifier = Modifier.size(20.dp)
                             )
+                        },
+                        trailingIcon = {
+                            if (text.isNotBlank()) {
+                                Icon(
+                                    imageVector = Icons.Default.Close,
+                                    contentDescription = null,
+                                    tint = Gray,
+                                    modifier = Modifier
+                                        .size(20.dp)
+                                        .clickable { text = "" }
+                                )
+                            }
                         },
                         colors = TextFieldDefaults.textFieldColors(
                             backgroundColor = Platinum,
