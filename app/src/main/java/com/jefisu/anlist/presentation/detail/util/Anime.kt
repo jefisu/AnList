@@ -12,5 +12,6 @@ data class Anime(
     val reviews: List<Review>,
     val genres: List<String>,
     val imageBackground: Int,
-    val poster: Int
+    val poster: Int,
+    val status: String
 )

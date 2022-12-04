@@ -9,8 +9,9 @@
     <string name="character">Character</string>
     <string name="review">Review</string>
     <string name="genre">Genre</string>
-    <string name="rate">rate</string>
-    <string name="eps">eps</string>
-    <string name="premiered">premiered</string>
-    <string name="studio">studio</string>
+    <string name="rate">Rate</string>
+    <string name="eps">Episodes</string>
+    <string name="premiered">Premiered</string>
+    <string name="status">Status</string>
+    <string name="studio">Studio</string>
 </resources>

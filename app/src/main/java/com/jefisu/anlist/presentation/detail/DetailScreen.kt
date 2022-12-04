@@ -13,8 +13,8 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -31,6 +31,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
@@ -85,8 +86,13 @@ fun DetailScreen(
     anime: Anime
 ) {
     var showAll by remember { mutableStateOf(false) }
-    val rotateIconAnim by animateFloatAsState(
+    var showAllStats by remember { mutableStateOf(false) }
+    val rotateIconSynopsisAnim by animateFloatAsState(
         targetValue = if (showAll) 90f else 270f,
+        animationSpec = tween(400)
+    )
+    val rotateIconStatsAnim by animateFloatAsState(
+        targetValue = if (showAllStats) 90f else 270f,
         animationSpec = tween(400)
     )
 
@@ -148,6 +154,11 @@ fun DetailScreen(
                     modifier = Modifier
                         .height(202.dp)
                         .clip(RoundedCornerShape(12.dp))
+                        .border(
+                            width = 2.dp,
+                            color = MaterialTheme.colors.background,
+                            shape = RoundedCornerShape(12.dp)
+                        )
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
@@ -226,11 +237,10 @@ fun DetailScreen(
                 .padding(top = 12.dp)
                 .verticalScroll(scrollState)
         ) {
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 22.dp)
+            FlowRow(
+                mainAxisSpacing = 48.dp,
+                crossAxisSpacing = 12.dp,
+                modifier = Modifier.animateContentSize()
             ) {
                 MainAnimeInfo(
                     value = anime.rate.toString(),
@@ -244,12 +254,28 @@ fun DetailScreen(
                     value = anime.premiered,
                     info = stringResource(R.string.premiered)
                 )
-                MainAnimeInfo(
-                    value = anime.studio,
-                    info = stringResource(R.string.studio)
-                )
+                if (showAllStats) {
+                    MainAnimeInfo(
+                        value = anime.studio,
+                        info = stringResource(R.string.studio)
+                    )
+                    MainAnimeInfo(
+                        value = anime.status,
+                        info = stringResource(R.string.status)
+                    )
+                }
             }
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(4.dp))
+            Icon(
+                imageVector = Icons.Default.ArrowBackIosNew,
+                contentDescription = null,
+                tint = GraniteGray,
+                modifier = Modifier
+                    .size(16.dp)
+                    .graphicsLayer(rotationZ = rotateIconStatsAnim)
+                    .clickable { showAllStats = !showAllStats }
+            )
+            Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = stringResource(R.string.synopsis),
                 style = defaultTextStyle,
@@ -267,14 +293,14 @@ fun DetailScreen(
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.animateContentSize()
             )
-            Spacer(modifier = Modifier.height(2.dp))
+            Spacer(modifier = Modifier.height(4.dp))
             Icon(
                 imageVector = Icons.Default.ArrowBackIosNew,
                 contentDescription = null,
                 tint = GraniteGray,
                 modifier = Modifier
                     .size(16.dp)
-                    .graphicsLayer(rotationZ = rotateIconAnim)
+                    .graphicsLayer(rotationZ = rotateIconSynopsisAnim)
                     .clickable { showAll = !showAll }
             )
             Spacer(modifier = Modifier.height(8.dp))
@@ -392,6 +418,7 @@ fun PreviewDetailScreen() {
                 " which would leave her unguarded, then the demon, whose only goal is to kill Shion will do so, thus" +
                 " meaning the end of the world. Naruto decides to challenge this \\\"prediction of death,\\\" but fails to " +
                 "prove Shion's prediction wrong and supposedly dies in vain.\\n(Source: Wikipedia)",
+            status = "Airing"
         )
     )
 }

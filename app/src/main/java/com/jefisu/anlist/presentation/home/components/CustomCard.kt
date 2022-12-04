@@ -136,7 +136,8 @@ fun PreviewCustomCard() {
                 characters = emptyList(),
                 reviews = emptyList(),
                 genres = emptyList(),
-                imageBackground = 0
+                imageBackground = 0,
+                status = "Airing"
             )
         )
     }
