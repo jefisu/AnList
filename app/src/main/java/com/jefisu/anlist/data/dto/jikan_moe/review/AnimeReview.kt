@@ -16,5 +16,5 @@ data class AnimeReview(
     @SerialName("is_spoiler") val isSpoiler: Boolean,
     @SerialName("is_preliminary") val isPreliminary: Boolean,
     @SerialName("episodes_watched") val episodesWatched: Boolean?,
-    val user: User
+    val user: UserDto
 )

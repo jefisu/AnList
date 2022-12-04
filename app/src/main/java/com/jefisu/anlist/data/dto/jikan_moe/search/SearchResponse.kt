@@ -6,6 +6,6 @@ import kotlinx.serialization.Serializable
 data class SearchResponse<T>(
     val pagination: Pagination,
     val data: List<T>,
-    val links: Links,
-    val meta: Meta
+    val links: Links? = null,
+    val meta: Meta? = null
 )

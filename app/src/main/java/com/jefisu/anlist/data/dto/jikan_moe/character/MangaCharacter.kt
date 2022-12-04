@@ -4,6 +4,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class MangaCharacter(
-    val character: Character,
+    val character: CharacterDto,
     val role: String
 )

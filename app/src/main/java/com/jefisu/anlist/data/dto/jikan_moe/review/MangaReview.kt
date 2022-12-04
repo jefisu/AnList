@@ -16,5 +16,5 @@ data class MangaReview(
     @SerialName("is_spoiler") val isSpoiler: Boolean,
     @SerialName("is_preliminary") val isPreliminary: Boolean,
     @SerialName("chapters_read") val chaptersRead: Boolean?,
-    val user: User
+    val user: UserDto
 )

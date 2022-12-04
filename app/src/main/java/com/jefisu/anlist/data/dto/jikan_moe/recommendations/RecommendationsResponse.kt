@@ -6,5 +6,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class RecommendationsResponse(
     val pagination: Pagination,
-    @SerialName("data") val recommendations: List<Recommendation>
+    @SerialName("data") val recommendations: List<RecommendationDto>
 )

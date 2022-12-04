@@ -4,11 +4,10 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Anime(
+data class MangaDto(
     @SerialName("mal_id") val malId: Int,
     val url: String,
     val images: Images,
-    val trailer: Trailer,
     val approved: Boolean,
     val titles: List<Title>,
     val title: String,
@@ -16,29 +15,24 @@ data class Anime(
     @SerialName("title_japanese") val titleJapanese: String?,
     @SerialName("title_synonyms") val titleSynonyms: List<String>,
     val type: String?,
-    val source: String?,
-    val episodes: Int?,
+    val chapters: Int?,
+    val volumes: Int?,
     val status: String?,
-    val airing: Boolean,
-    val aired: Aired,
-    val duration: String?,
-    val rating: String?,
+    val publishing: String?,
+    val published: Aired?,
     val score: Float?,
-    @SerialName("scored_by")val scoredBy: Int?,
+    val scored: Float?,
+    @SerialName("scored_by") val scoredBy: Int?,
     val rank: Int?,
     val popularity: Int?,
     val members: Int?,
     val favorites: Int?,
     val synopsis: String?,
     val background: String?,
-    val season: String?,
-    val year: Int?,
-    val broadcast: Broadcast,
-    val producers: List<DataExtension>,
-    val licensors: List<DataExtension>,
-    val studios: List<DataExtension>,
+    val authors: List<DataExtension>,
+    val serializations: List<DataExtension>,
     val genres: List<DataExtension>,
-    @SerialName("explicit_genres")val explicitGenres: List<String>,
-    val demographics: List<DataExtension>,
-    val themes: List<DataExtension>
+    @SerialName("explicit_genres") val explicitGenres: List<String>,
+    val themes: List<DataExtension>,
+    val demographics: List<DataExtension>
 )

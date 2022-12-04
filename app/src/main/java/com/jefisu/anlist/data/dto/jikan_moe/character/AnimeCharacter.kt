@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class AnimeCharacter(
-    val character: Character,
+    val character: CharacterDto,
     val role: String,
     val favorites: Int,
     @SerialName("voice_actors") val voiceActors: List<VoiceActor>

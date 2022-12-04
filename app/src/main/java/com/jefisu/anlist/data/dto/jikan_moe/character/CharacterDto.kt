@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Character(
+data class CharacterDto(
     @SerialName("mal_id") val malId: Int,
     val url: String,
     val images: Images,
