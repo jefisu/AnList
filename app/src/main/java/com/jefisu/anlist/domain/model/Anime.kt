@@ -15,5 +15,6 @@ data class Anime(
     val rate: Float,
     val premiered: String,
     val studios: List<String>,
-    val genres: List<Int>
+    val genres: List<Int>,
+    val imageBackground: String? = null
 )
