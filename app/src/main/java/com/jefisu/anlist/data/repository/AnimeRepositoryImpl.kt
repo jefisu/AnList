@@ -11,6 +11,7 @@ import com.jefisu.anlist.data.dto.jikan_moe.review.MangaReviews
 import com.jefisu.anlist.data.dto.jikan_moe.search.AnimeDto
 import com.jefisu.anlist.data.dto.jikan_moe.search.MangaDto
 import com.jefisu.anlist.data.dto.jikan_moe.search.SearchResponse
+import com.jefisu.anlist.data.dto.kitsu.KitsuResponse
 import com.jefisu.anlist.domain.model.Anime
 import com.jefisu.anlist.domain.model.Character
 import com.jefisu.anlist.domain.model.Recommendation
@@ -24,6 +25,7 @@ import com.jefisu.anlist.domain.repository.AnimeRepository
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
+import io.ktor.client.request.url
 
 class AnimeRepositoryImpl(
     private val client: HttpClient
@@ -113,5 +115,13 @@ class AnimeRepositoryImpl(
                     .data.map { it.toManga() }
             } as List<T>
         }
+    }
+
+    override suspend fun getImageBackground(name: String, type: String): String {
+        return client.get {
+            url("https://kitsu.io/api/edge/$type?fields[$type]=canonicalTitle,coverImage&filter[text]=$name")
+        }.body<KitsuResponse>()
+            .data.firstOrNull { it.attributes.canonicalTitle.contains(name, true) }
+            ?.attributes?.coverImage?.original.orEmpty()
     }
 }

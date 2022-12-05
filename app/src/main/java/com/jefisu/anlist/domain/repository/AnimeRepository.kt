@@ -13,4 +13,5 @@ interface AnimeRepository {
     suspend fun getRecommendations(type: String): Resource<List<Recommendation>>
     suspend fun getAnimeBySeason(year: Int, season: String): Resource<List<Anime>>
     suspend fun <T> getTop(type: String): Resource<List<T>>
+    suspend fun getImageBackground(name: String, type: String): String
 }
