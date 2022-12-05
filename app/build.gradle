@@ -90,4 +90,12 @@ dependencies {
 
     // Collapsing toolbar
     implementation "me.onebone:toolbar-compose:2.3.5"
+
+    // Ktor
+    def ktor_version = "2.1.1"
+    implementation "io.ktor:ktor-client-android:$ktor_version"
+    implementation "io.ktor:ktor-client-content-negotiation:$ktor_version"
+    implementation "io.ktor:ktor-serialization-kotlinx-json:$ktor_version"
+    implementation "io.ktor:ktor-client-logging:$ktor_version"
+    implementation "ch.qos.logback:logback-classic:1.2.11"
 }
