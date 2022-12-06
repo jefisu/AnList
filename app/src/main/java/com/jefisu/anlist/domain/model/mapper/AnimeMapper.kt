@@ -17,7 +17,7 @@ fun AnimeDto.toAnime() = Anime(
     status = status.orEmpty(),
     duration = duration.orEmpty(),
     rate = score ?: 0f,
-    premiered = "$season $year",
+    premiered = "${season?.replaceFirstChar { it.titlecase() }} $year",
     studios = studios.map { it.name },
     genres = getGenresImage(genres.map { it.name })
 )
