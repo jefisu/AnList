@@ -13,7 +13,7 @@
     <string name="eps">Episodes</string>
     <string name="premiered">Premiered</string>
     <string name="status">Status</string>
-    <string name="studio">Studio</string>
+    <string name="studios">Studios</string>
     <string name="unknown_error">Unknown error.</string>
     <string name="error_couldnt_reach_server">Oops! Couldn\'t reach server. \nCheck your internet connection.</string>
     <string name="oops_something_went_wrong">Oops! Something went wrong.\nPlease try again.</string>
