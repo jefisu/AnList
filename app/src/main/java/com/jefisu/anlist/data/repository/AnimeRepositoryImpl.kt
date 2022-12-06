@@ -53,12 +53,12 @@ class AnimeRepositoryImpl(
                 client
                     .get("${AnimeConstants.BASE_URL}/anime/$malId/characters")
                     .body<AnimeCharacters>()
-                    .data.map { it.character.toCharacter() }
+                    .data.map { it.toCharacter() }
             } else {
                 client
                     .get("${AnimeConstants.BASE_URL}/manga/$malId/characters")
                     .body<MangaCharacters>()
-                    .data.map { it.character.toCharacter() }
+                    .data.map { it.toCharacter() }
             }
         }
     }
