@@ -34,8 +34,6 @@ import androidx.compose.material.icons.filled.Sort
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -94,7 +92,6 @@ fun HomeScreen(
         IconSeasonSettings.Summer,
         IconSeasonSettings.Schedule
     )
-    var text by remember { mutableStateOf("") }
     val collapsingState = rememberCollapsingToolbarScaffoldState()
     val alphaAnim by animateFloatAsState(
         targetValue = collapsingState.toolbarState.progress
