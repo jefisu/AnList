@@ -51,31 +51,40 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.google.accompanist.flowlayout.FlowRow
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.rememberPagerState
 import com.jefisu.anlist.R
 import com.jefisu.anlist.core.presentation.CustomIcon
+import com.jefisu.anlist.data.dto.jikan_moe.character.AnimeCharacters
+import com.jefisu.anlist.data.dto.jikan_moe.review.AnimeReviews
+import com.jefisu.anlist.data.dto.jikan_moe.search.AnimeDto
+import com.jefisu.anlist.data.dto.jikan_moe.search.SearchResponse
+import com.jefisu.anlist.domain.model.Anime
+import com.jefisu.anlist.domain.model.Character
+import com.jefisu.anlist.domain.model.Review
+import com.jefisu.anlist.domain.model.mapper.toAnime
+import com.jefisu.anlist.domain.model.mapper.toCharacter
+import com.jefisu.anlist.domain.model.mapper.toReview
 import com.jefisu.anlist.presentation.detail.components.CharacterInfo
 import com.jefisu.anlist.presentation.detail.components.MainAnimeInfo
 import com.jefisu.anlist.presentation.detail.components.ReviewItem
 import com.jefisu.anlist.presentation.detail.components.TabsContent
-import com.jefisu.anlist.presentation.detail.util.Anime
-import com.jefisu.anlist.presentation.detail.util.Character
-import com.jefisu.anlist.presentation.detail.util.Review
-import com.jefisu.anlist.presentation.detail.util.getGenresImage
 import com.jefisu.anlist.ui.theme.DarkSlateBlue
 import com.jefisu.anlist.ui.theme.GraniteGray
 import com.jefisu.anlist.ui.theme.PhilippineGray
 import com.jefisu.anlist.ui.theme.defaultTextStyle
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 import me.onebone.toolbar.CollapsingToolbarScaffold
 import me.onebone.toolbar.ScrollStrategy
 import me.onebone.toolbar.rememberCollapsingToolbarScaffoldState
@@ -83,7 +92,9 @@ import me.onebone.toolbar.rememberCollapsingToolbarScaffoldState
 @OptIn(ExperimentalPagerApi::class, ExperimentalAnimationApi::class)
 @Composable
 fun DetailScreen(
-    anime: Anime
+    anime: Anime,
+    characters: List<Character>,
+    reviews: List<Review>,
 ) {
     var showAll by remember { mutableStateOf(false) }
     var showAllStats by remember { mutableStateOf(false) }
@@ -119,7 +130,18 @@ fun DetailScreen(
                     .background(DarkSlateBlue)
                     .alpha(alphaBoxAnim)
             )
-            Image(
+            AsyncImage(
+                model = anime.imageBackground,
+                contentDescription = null,
+                colorFilter = ColorFilter.tint(Color.Black.copy(0.3f), BlendMode.Luminosity),
+                alpha = if (collapsingState.toolbarState.progress < 0.1f) 0f else 1f,
+                contentScale = ContentScale.FillWidth,
+                modifier = Modifier
+                    .height(228.dp)
+                    .clip(RoundedCornerShape(0.dp, 0.dp, 24.dp, 24.dp))
+            )
+
+           /* Image(
                 painter = painterResource(id = anime.imageBackground),
                 contentDescription = null,
                 colorFilter = ColorFilter.tint(Color.Black.copy(0.3f), BlendMode.Luminosity),
@@ -128,7 +150,7 @@ fun DetailScreen(
                 modifier = Modifier
                     .height(228.dp)
                     .clip(RoundedCornerShape(0.dp, 0.dp, 24.dp, 24.dp))
-            )
+            )*/
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
@@ -148,8 +170,8 @@ fun DetailScreen(
                     )
                 )
                 Spacer(modifier = Modifier.height(20.dp))
-                Image(
-                    painter = painterResource(anime.poster),
+                AsyncImage(
+                    model = anime.poster,
                     contentDescription = null,
                     modifier = Modifier
                         .height(202.dp)
@@ -160,6 +182,19 @@ fun DetailScreen(
                             shape = RoundedCornerShape(12.dp)
                         )
                 )
+
+                /*Image(
+                    painter = painterResource(anime.poster),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .height(202.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .border(
+                            width = 2.dp,
+                            color = MaterialTheme.colors.background,
+                            shape = RoundedCornerShape(12.dp)
+                        )
+                )*/
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = anime.name,
@@ -172,7 +207,7 @@ fun DetailScreen(
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = anime.episodeDuration,
+                    text = anime.duration,
                     style = defaultTextStyle,
                     fontSize = 14.sp,
                     color = PhilippineGray
@@ -247,7 +282,7 @@ fun DetailScreen(
                     info = stringResource(R.string.rate)
                 )
                 MainAnimeInfo(
-                    value = anime.eps.toString(),
+                    value = "${anime.episodes}",
                     info = stringResource(R.string.eps)
                 )
                 MainAnimeInfo(
@@ -256,8 +291,8 @@ fun DetailScreen(
                 )
                 if (showAllStats) {
                     MainAnimeInfo(
-                        value = anime.studio,
-                        info = stringResource(R.string.studio)
+                        value = anime.studios.joinToString(),
+                        info = stringResource(R.string.studios)
                     )
                     MainAnimeInfo(
                         value = anime.status,
@@ -321,7 +356,7 @@ fun DetailScreen(
                                 crossAxisSpacing = 8.dp,
                                 modifier = Modifier.padding(bottom = 8.dp)
                             ) {
-                                anime.characters.forEach { character ->
+                                characters.forEach { character ->
                                     CharacterInfo(
                                         character = character,
                                         modifier = Modifier.width(164.dp)
@@ -331,7 +366,7 @@ fun DetailScreen(
                         }
                         stringResource(R.string.review) -> {
                             Column {
-                                anime.reviews.forEach {
+                                reviews.forEach {
                                     ReviewItem(
                                         review = it,
                                         modifier = Modifier
@@ -348,7 +383,7 @@ fun DetailScreen(
                                 crossAxisSpacing = 12.dp,
                                 modifier = Modifier.padding(bottom = 12.dp)
                             ) {
-                                getGenresImage(anime.genres).forEach {
+                                anime.genres.forEach {
                                     Image(
                                         painter = painterResource(it),
                                         contentDescription = null,
@@ -367,58 +402,34 @@ fun DetailScreen(
 @Preview
 @Composable
 fun PreviewDetailScreen() {
+    val context = LocalContext.current
+    val animeJson = context.resources
+        .openRawResource(R.raw.detail_anime)
+        .readBytes()
+        .decodeToString()
+    val charactersJson = context.resources
+        .openRawResource(R.raw.characters_anime)
+        .readBytes()
+        .decodeToString()
+    val reviewsJson = context.resources
+        .openRawResource(R.raw.reviews_anime)
+        .readBytes()
+        .decodeToString()
+
+    val animeParsed = Json
+        .decodeFromString<SearchResponse<AnimeDto>>(animeJson)
+        .data.map { it.toAnime() }
+        .first()
+    val charactersParsed = Json
+        .decodeFromString<AnimeCharacters>(charactersJson)
+        .data.map { it.toCharacter() }
+    val reviewsParsed = Json
+        .decodeFromString<AnimeReviews>(reviewsJson)
+        .data.map { it.toReview() }
+
     DetailScreen(
-        anime = Anime(
-            name = "Naruto",
-            rate = 7.53f,
-            eps = 24,
-            episodeDuration = "24 min",
-            premiered = "Fall 2022",
-            studio = "Pierrot",
-            characters = listOf(
-                Character("Naruto Uzumaki", "Junko Takeuchi", R.drawable.naruto),
-                Character("Shikamaru Nara", "Nobutoshi Canna", R.drawable.shikamaru),
-                Character("Hinata Hyuuga", "Nana Mizuki", R.drawable.hinata),
-                Character("Kakashi Hatake", "Kazuhiko Inoue", R.drawable.kakashi),
-            ),
-            reviews = listOf(
-                Review(
-                    "jefisu",
-                    LoremIpsum(42).values.first(),
-                    "11/25/2022",
-                    R.drawable.jefisu_profile
-                ),
-                Review(
-                    "jefisu",
-                    LoremIpsum(42).values.first(),
-                    "11/25/2022",
-                    R.drawable.jefisu_profile
-                ),
-                Review(
-                    "jefisu",
-                    LoremIpsum(42).values.first(),
-                    "11/25/2022",
-                    R.drawable.jefisu_profile
-                ),
-                Review(
-                    "jefisu",
-                    LoremIpsum(42).values.first(),
-                    "11/25/2022",
-                    R.drawable.jefisu_profile
-                ),
-            ),
-            genres = listOf("Action", "Adventure", "Fantasy"),
-            imageBackground = R.drawable.naruto_background,
-            poster = R.drawable.naruto_poster,
-            synopsis = "Demons that once almost destroyed the world, are revived by someone. To prevent the" +
-                " world from being destroyed, the demon has to be sealed and the only one who can do it" +
-                " is the shrine maiden Shion from the country of demons, who has two powers; one is sealing" +
-                " demons and the other is predicting the deaths of humans. This time Naruto's mission is to" +
-                " guard Shion, but she predicts Naruto's death. The only way to escape it, is to get away from Shion," +
-                " which would leave her unguarded, then the demon, whose only goal is to kill Shion will do so, thus" +
-                " meaning the end of the world. Naruto decides to challenge this \\\"prediction of death,\\\" but fails to " +
-                "prove Shion's prediction wrong and supposedly dies in vain.\\n(Source: Wikipedia)",
-            status = "Airing"
-        )
+        anime = animeParsed.copy(imageBackground = "https://media.kitsu.io/anime/cover_images/11/original.jpg"),
+        characters = charactersParsed,
+        reviews = reviewsParsed
     )
 }
