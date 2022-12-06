@@ -1,6 +1,5 @@
 package com.jefisu.anlist.presentation.home.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -28,24 +27,31 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.jefisu.anlist.R
-import com.jefisu.anlist.presentation.detail.util.Anime
+import com.jefisu.anlist.data.dto.jikan_moe.search.AnimeDto
+import com.jefisu.anlist.data.dto.jikan_moe.search.SearchResponse
+import com.jefisu.anlist.domain.model.Anime
+import com.jefisu.anlist.domain.model.mapper.toAnime
 import com.jefisu.anlist.ui.theme.DarkSlateBlue
 import com.jefisu.anlist.ui.theme.PhilippineGray
 import com.jefisu.anlist.ui.theme.defaultTextStyle
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 
 @Composable
 fun CustomCard(
     anime: Anime,
     modifier: Modifier = Modifier,
     shape: Shape = RoundedCornerShape(8.dp),
-    size: DpSize = DpSize(211.dp, 119.dp)
+    size: DpSize = DpSize(211.dp, 119.dp),
 ) {
     var heightRow by remember { mutableStateOf(0.dp) }
     val density = LocalDensity.current
@@ -53,8 +59,8 @@ fun CustomCard(
         modifier = modifier.clip(shape)
     ) {
         Box {
-            Image(
-                painter = painterResource(anime.poster),
+            AsyncImage(
+                model = anime.imageBackground,
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.size(size)
@@ -107,9 +113,12 @@ fun CustomCard(
                 Text(
                     text = anime.name,
                     style = defaultTextStyle,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.width(size.width - 24.dp)
                 )
                 Text(
-                    text = anime.studio,
+                    text = anime.studios.joinToString(),
                     style = defaultTextStyle,
                     fontSize = 10.sp,
                     color = PhilippineGray
@@ -122,23 +131,19 @@ fun CustomCard(
 @Preview
 @Composable
 fun PreviewCustomCard() {
+    val context = LocalContext.current
+    val animeJson = context.resources
+        .openRawResource(R.raw.top_airing_anime)
+        .readBytes()
+        .decodeToString()
+
+    val animeParsed = Json.decodeFromString<SearchResponse<AnimeDto>>(animeJson)
+        .data.map { it.toAnime() }
+        .first()
+
     Box(modifier = Modifier.padding(16.dp)) {
         CustomCard(
-            anime = Anime(
-                name = "Classroom of the elite",
-                rate = 8.86f,
-                studio = "Lerche",
-                poster = R.drawable.classroom_of_the_elite,
-                eps = 0,
-                synopsis = "",
-                episodeDuration = "",
-                premiered = "",
-                characters = emptyList(),
-                reviews = emptyList(),
-                genres = emptyList(),
-                imageBackground = 0,
-                status = "Airing"
-            )
+            anime = animeParsed
         )
     }
 }

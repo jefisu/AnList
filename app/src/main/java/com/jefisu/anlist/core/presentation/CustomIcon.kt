@@ -3,6 +3,7 @@ package com.jefisu.anlist.core.presentation
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -40,7 +41,8 @@ fun CustomIcon(
     textStyle: TextStyle = defaultTextStyle.copy(
         fontSize = 10.sp,
         color = DarkSlateBlue
-    )
+    ),
+    onClick: () -> Unit = {}
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -53,6 +55,7 @@ fun CustomIcon(
             modifier = Modifier
                 .clip(shape)
                 .background(color)
+                .clickable { onClick() }
                 .padding(paddingValues)
                 .size(size)
         )
