@@ -6,5 +6,5 @@ import kotlinx.serialization.Serializable
 data class LinksX(
     val first: String,
     val last: String,
-    val next: String
+    val next: String? = null
 )

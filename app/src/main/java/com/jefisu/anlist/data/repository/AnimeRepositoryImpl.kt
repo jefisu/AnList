@@ -3,10 +3,11 @@ package com.jefisu.anlist.data.repository
 import com.jefisu.anlist.core.util.Resource
 import com.jefisu.anlist.core.util.requestCatch
 import com.jefisu.anlist.data.AnimeConstants
+import com.jefisu.anlist.data.dto.jikan_moe.AnimeResponse
 import com.jefisu.anlist.data.dto.jikan_moe.character.CharactersResponse
 import com.jefisu.anlist.data.dto.jikan_moe.recommendations.RecommendationsResponse
 import com.jefisu.anlist.data.dto.jikan_moe.review.ReviewResponse
-import com.jefisu.anlist.data.dto.jikan_moe.search.AnimeDto
+import com.jefisu.anlist.data.dto.jikan_moe.search.AnimeData
 import com.jefisu.anlist.data.dto.jikan_moe.search.SearchResponse
 import com.jefisu.anlist.data.dto.kitsu.KitsuResponse
 import com.jefisu.anlist.domain.model.Anime
@@ -31,8 +32,8 @@ class AnimeRepositoryImpl(
         return requestCatch {
             client
                 .get("${AnimeConstants.BASE_URL}/anime/$malId")
-                .body<AnimeDto>()
-                .toAnime()
+                .body<AnimeResponse>()
+                .data.toAnime()
         }
     }
 
@@ -40,7 +41,7 @@ class AnimeRepositoryImpl(
         return requestCatch {
             client
                 .get("${AnimeConstants.BASE_URL}/anime?q=$name")
-                .body<SearchResponse<AnimeDto>>()
+                .body<SearchResponse>()
                 .data.map { it.toAnime() }
         }
     }
@@ -80,7 +81,7 @@ class AnimeRepositoryImpl(
         return requestCatch {
             client
                 .get("${AnimeConstants.BASE_URL}/seasons/$year/$season")
-                .body<SearchResponse<AnimeDto>>()
+                .body<SearchResponse>()
                 .data.map { it.toAnime() }
         }
     }
@@ -89,7 +90,7 @@ class AnimeRepositoryImpl(
         return requestCatch {
             client
                 .get("${AnimeConstants.BASE_URL}/top/anime")
-                .body<SearchResponse<AnimeDto>>()
+                .body<SearchResponse>()
                 .data.map { it.toAnime() }
         }
     }

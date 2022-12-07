@@ -1,5 +1,9 @@
 package com.jefisu.anlist.domain.model
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
 data class Anime(
     val malId: Int,
     val malUrl: String,
@@ -12,9 +16,9 @@ data class Anime(
     val episodes: Int,
     val status: String,
     val duration: String,
-    val rate: Float,
+    val rate: String,
     val premiered: String,
     val studios: List<String>,
     val genres: List<Int>,
     val imageBackground: String? = null
-)
+) : Parcelable

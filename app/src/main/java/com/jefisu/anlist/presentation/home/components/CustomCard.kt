@@ -1,9 +1,12 @@
 package com.jefisu.anlist.presentation.home.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -14,6 +17,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -36,7 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.jefisu.anlist.R
-import com.jefisu.anlist.data.dto.jikan_moe.search.AnimeDto
+import com.jefisu.anlist.data.dto.jikan_moe.search.AnimeData
 import com.jefisu.anlist.data.dto.jikan_moe.search.SearchResponse
 import com.jefisu.anlist.domain.model.Anime
 import com.jefisu.anlist.domain.model.mapper.toAnime
@@ -49,14 +53,24 @@ import kotlinx.serialization.json.Json
 @Composable
 fun CustomCard(
     anime: Anime,
+    onClick: () -> Unit,
+    paddingValues: PaddingValues = PaddingValues(),
     modifier: Modifier = Modifier,
     shape: Shape = RoundedCornerShape(8.dp),
-    size: DpSize = DpSize(211.dp, 119.dp),
+    size: DpSize = DpSize(211.dp, 119.dp)
 ) {
     var heightRow by remember { mutableStateOf(0.dp) }
     val density = LocalDensity.current
     Box(
-        modifier = modifier.clip(shape)
+        modifier = Modifier
+            .padding(paddingValues)
+            .clip(shape)
+            .clickable(
+                onClick = onClick,
+                interactionSource = remember { MutableInteractionSource() },
+                indication = rememberRipple()
+            )
+            .then(modifier)
     ) {
         Box {
             AsyncImage(
@@ -104,7 +118,7 @@ fun CustomCard(
                         modifier = Modifier.size(8.dp)
                     )
                     Text(
-                        text = "${anime.rate}",
+                        text = anime.rate,
                         style = defaultTextStyle,
                         fontSize = 12.sp,
                         color = Color.Yellow.copy(0.8f)
@@ -137,13 +151,14 @@ fun PreviewCustomCard() {
         .readBytes()
         .decodeToString()
 
-    val animeParsed = Json.decodeFromString<SearchResponse<AnimeDto>>(animeJson)
+    val animeParsed = Json.decodeFromString<SearchResponse>(animeJson)
         .data.map { it.toAnime() }
         .first()
 
     Box(modifier = Modifier.padding(16.dp)) {
         CustomCard(
-            anime = animeParsed
+            anime = animeParsed,
+            onClick = {}
         )
     }
 }
