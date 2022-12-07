@@ -14,6 +14,6 @@ interface AnimeRepository {
     suspend fun getReviews(malId: Int): Resource<List<Review>>
     suspend fun getRecommendations(): Resource<List<Recommendation>>
     suspend fun getAnimeBySeason(year: Int, season: String): Resource<List<Anime>>
-    suspend fun getTop(): Resource<List<Anime>>
+    suspend fun getTop(limit: Int = 5): Resource<List<Anime>>
     suspend fun getImageBackground(name: String): String
 }

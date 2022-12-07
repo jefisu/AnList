@@ -53,7 +53,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.constraintlayout.compose.DesignInfoDataKey
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.google.accompanist.flowlayout.FlowRow
@@ -235,7 +234,7 @@ fun HomeScreen(
                                 CustomCard(
                                     anime = it,
                                     onClick = {
-                                        navigator.navigate(DetailScreenDestination(null, it))
+                                        navigator.navigate(DetailScreenDestination(it.malId))
                                     },
                                     paddingValues = PaddingValues(
                                         start = if (it == topAirings.first()) 24.dp else 0.dp,
@@ -356,12 +355,7 @@ fun HomeScreen(
                                         interactionSource = remember { MutableInteractionSource() },
                                         indication = rememberRipple(),
                                         onClick = {
-                                            navigator.navigate(
-                                                DetailScreenDestination(
-                                                    it.malId,
-                                                    null
-                                                )
-                                            )
+                                            navigator.navigate(DetailScreenDestination(it.malId))
                                         }
                                     )
                             )

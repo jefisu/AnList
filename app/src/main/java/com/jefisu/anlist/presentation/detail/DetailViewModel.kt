@@ -46,13 +46,8 @@ class DetailViewModel @Inject constructor(
 
     private fun getAnime() {
         isLoading.value = false
-        navArgs.anime?.let {
-            animeFlow.value = it
-            getAdditionalInfo()
-            return
-        }
         viewModelScope.launch {
-            val response = repository.getAnimeById(navArgs.malId ?: return@launch)
+            val response = repository.getAnimeById(navArgs.malId)
             animeFlow.value = if (response is Resource.Success) response.data else null
             getAdditionalInfo()
             isLoading.value = true
@@ -71,12 +66,6 @@ class DetailViewModel @Inject constructor(
                 val response = repository.getCharacters(anime.malId)
                 characters.value =
                     if (response is Resource.Success) response.data.orEmpty() else emptyList()
-            }
-            launch {
-                val response = repository.getImageBackground(anime.name)
-                animeFlow.value = anime.copy(
-                    imageBackground = response.ifBlank { anime.poster }
-                )
             }
         }
     }

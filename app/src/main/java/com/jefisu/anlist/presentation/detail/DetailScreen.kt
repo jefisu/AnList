@@ -132,9 +132,10 @@ fun DetailScreen(
                     contentDescription = null,
                     colorFilter = ColorFilter.tint(Color.Black.copy(0.3f), BlendMode.Luminosity),
                     alpha = if (collapsingState.toolbarState.progress < 0.1f) 0f else 1f,
-                    contentScale = ContentScale.FillWidth,
+                    contentScale = ContentScale.Crop,
                     modifier = Modifier
-                        .height(228.dp)
+                        .fillMaxWidth()
+                        .height(220.dp)
                         .clip(RoundedCornerShape(0.dp, 0.dp, 24.dp, 24.dp))
                 )
                 Column(
@@ -170,7 +171,7 @@ fun DetailScreen(
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = anime.name,
+                        text = anime.title,
                         style = defaultTextStyle,
                         fontSize = 18.sp,
                         color = DarkSlateBlue,
@@ -186,43 +187,42 @@ fun DetailScreen(
                         color = PhilippineGray
                     )
                 }
-                Box(
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
                         .fillMaxWidth()
                         .pin()
                 ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        IconButton(
-                            onClick = navigator::navigateUp
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.ArrowBackIosNew,
-                                contentDescription = null,
-                                tint = Color.White
-                            )
-                        }
-                        AnimatedVisibility(
-                            visible = collapsingState.toolbarState.progress < 0.89f
-                        ) {
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(
-                                text = anime.name,
-                                style = defaultTextStyle,
-                                fontSize = 18.sp,
-                                color = Color.White,
-                                maxLines = 2,
-                                textAlign = TextAlign.Center,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        }
+                    IconButton(
+                        onClick = navigator::navigateUp
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBackIosNew,
+                            contentDescription = null,
+                            tint = Color.White
+                        )
                     }
                     AnimatedVisibility(
                         visible = collapsingState.toolbarState.progress < 0.89f,
                         enter = fadeIn() + expandHorizontally(),
                         exit = fadeOut() + shrinkHorizontally(),
-                        modifier = Modifier
-                            .align(Alignment.CenterEnd)
-                            .padding(end = 8.dp)
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = anime.title,
+                            style = defaultTextStyle,
+                            fontSize = 18.sp,
+                            color = Color.White,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                    AnimatedVisibility(
+                        visible = collapsingState.toolbarState.progress < 0.89f,
+                        enter = fadeIn() + expandHorizontally(),
+                        exit = fadeOut() + shrinkHorizontally(),
+                        modifier = Modifier.padding(end = 8.dp)
                     ) {
                         IconButton(
                             onClick = { /*TODO*/ }
@@ -337,6 +337,7 @@ fun DetailScreen(
                                     }
                                 }
                             }
+
                             stringResource(R.string.review) -> {
                                 Column {
                                     reviews.forEach {
@@ -350,6 +351,7 @@ fun DetailScreen(
                                     }
                                 }
                             }
+
                             stringResource(R.string.genre) -> {
                                 FlowRow(
                                     mainAxisSpacing = 12.dp,

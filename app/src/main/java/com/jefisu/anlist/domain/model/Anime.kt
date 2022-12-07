@@ -7,7 +7,8 @@ import kotlinx.parcelize.Parcelize
 data class Anime(
     val malId: Int,
     val malUrl: String,
-    val name: String,
+    val title: String,
+    val titleEnglish: String,
     val synopsis: String,
     val poster: String,
     val trailerYoutubeId: String,

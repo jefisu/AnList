@@ -40,7 +40,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.jefisu.anlist.R
-import com.jefisu.anlist.data.dto.jikan_moe.search.AnimeData
 import com.jefisu.anlist.data.dto.jikan_moe.search.SearchResponse
 import com.jefisu.anlist.domain.model.Anime
 import com.jefisu.anlist.domain.model.mapper.toAnime
@@ -74,7 +73,7 @@ fun CustomCard(
     ) {
         Box {
             AsyncImage(
-                model = anime.imageBackground,
+                model = anime.poster,
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.size(size)
@@ -125,7 +124,7 @@ fun CustomCard(
                     )
                 }
                 Text(
-                    text = anime.name,
+                    text = anime.title,
                     style = defaultTextStyle,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,

@@ -7,7 +7,8 @@ import com.jefisu.anlist.presentation.detail.util.getGenresImage
 fun AnimeData.toAnime() = Anime(
     malId = malId,
     malUrl = url,
-    name = title,
+    title = title,
+    titleEnglish = titleEnglish.orEmpty(),
     synopsis = synopsis.orEmpty(),
     poster = images.jpg.largeImageUrl.orEmpty(),
     trailerYoutubeId = trailer.youtubeId.orEmpty(),

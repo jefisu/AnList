@@ -61,19 +61,19 @@ class HomeViewModel @Inject constructor(
 
     private fun getImageBackground() {
         viewModelScope.launch {
-            topAiringAnime.value.forEach {
-                val image = repository.getImageBackground(it.name)
-                imagesBackground.value += Pair(it.malId, image)
-            }
-            topAiringAnime.value = topAiringAnime.value
-                .toMutableList()
-                .apply {
-                    replaceAll {
-                        if (imagesBackground.value.containsKey(it.malId)) {
-                            it.copy(imageBackground = imagesBackground.value[it.malId])
-                        } else it
-                    }
-                }
+//            topAiringAnime.value.forEach {
+//                val image = repository.getImageBackground(it.titleEnglish)
+//                imagesBackground.value += Pair(it.malId, image)
+//            }
+//            topAiringAnime.value = topAiringAnime.value
+//                .toMutableList()
+//                .apply {
+//                    replaceAll {
+//                        if (imagesBackground.value.containsKey(it.malId)) {
+//                            it.copy(imageBackground = imagesBackground.value[it.malId])
+//                        } else it
+//                    }
+//                }
         }
     }
 }
