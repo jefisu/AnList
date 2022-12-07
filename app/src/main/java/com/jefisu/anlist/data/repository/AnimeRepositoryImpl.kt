@@ -3,13 +3,10 @@ package com.jefisu.anlist.data.repository
 import com.jefisu.anlist.core.util.Resource
 import com.jefisu.anlist.core.util.requestCatch
 import com.jefisu.anlist.data.AnimeConstants
-import com.jefisu.anlist.data.dto.jikan_moe.character.AnimeCharacters
-import com.jefisu.anlist.data.dto.jikan_moe.character.MangaCharacters
+import com.jefisu.anlist.data.dto.jikan_moe.character.CharactersResponse
 import com.jefisu.anlist.data.dto.jikan_moe.recommendations.RecommendationsResponse
-import com.jefisu.anlist.data.dto.jikan_moe.review.AnimeReviews
-import com.jefisu.anlist.data.dto.jikan_moe.review.MangaReviews
+import com.jefisu.anlist.data.dto.jikan_moe.review.ReviewResponse
 import com.jefisu.anlist.data.dto.jikan_moe.search.AnimeDto
-import com.jefisu.anlist.data.dto.jikan_moe.search.MangaDto
 import com.jefisu.anlist.data.dto.jikan_moe.search.SearchResponse
 import com.jefisu.anlist.data.dto.kitsu.KitsuResponse
 import com.jefisu.anlist.domain.model.Anime
@@ -18,7 +15,6 @@ import com.jefisu.anlist.domain.model.Recommendation
 import com.jefisu.anlist.domain.model.Review
 import com.jefisu.anlist.domain.model.mapper.toAnime
 import com.jefisu.anlist.domain.model.mapper.toCharacter
-import com.jefisu.anlist.domain.model.mapper.toManga
 import com.jefisu.anlist.domain.model.mapper.toRecommendation
 import com.jefisu.anlist.domain.model.mapper.toReview
 import com.jefisu.anlist.domain.repository.AnimeRepository
@@ -31,59 +27,47 @@ class AnimeRepositoryImpl(
     private val client: HttpClient
 ) : AnimeRepository {
 
-    override suspend fun <T> search(name: String, type: String): Resource<List<T>> {
+    override suspend fun getAnimeById(malId: Int): Resource<Anime> {
         return requestCatch {
-            if (type == "anime") {
-                client
-                    .get("${AnimeConstants.BASE_URL}/anime?q=$name")
-                    .body<SearchResponse<AnimeDto>>()
-                    .data.map { it.toAnime() }
-            } else {
-                client
-                    .get("${AnimeConstants.BASE_URL}/manga?q=$name")
-                    .body<SearchResponse<MangaDto>>()
-                    .data.map { it.toManga() }
-            } as List<T>
+            client
+                .get("${AnimeConstants.BASE_URL}/anime/$malId")
+                .body<AnimeDto>()
+                .toAnime()
         }
     }
 
-    override suspend fun getCharacters(malId: Int, type: String): Resource<List<Character>> {
+    override suspend fun searchAnime(name: String): Resource<List<Anime>> {
         return requestCatch {
-            if (type == "anime") {
-                client
-                    .get("${AnimeConstants.BASE_URL}/anime/$malId/characters")
-                    .body<AnimeCharacters>()
-                    .data.map { it.toCharacter() }
-            } else {
-                client
-                    .get("${AnimeConstants.BASE_URL}/manga/$malId/characters")
-                    .body<MangaCharacters>()
-                    .data.map { it.toCharacter() }
-            }
+            client
+                .get("${AnimeConstants.BASE_URL}/anime?q=$name")
+                .body<SearchResponse<AnimeDto>>()
+                .data.map { it.toAnime() }
         }
     }
 
-    override suspend fun getReviews(malId: Int, type: String): Resource<List<Review>> {
+    override suspend fun getCharacters(malId: Int): Resource<List<Character>> {
         return requestCatch {
-            if (type == "anime") {
-                client
-                    .get("${AnimeConstants.BASE_URL}/anime/$malId/reviews")
-                    .body<AnimeReviews>()
-                    .data.map { it.toReview() }
-            } else {
-                client
-                    .get("${AnimeConstants.BASE_URL}/manga/$malId/reviews")
-                    .body<MangaReviews>()
-                    .data.map { it.toReview() }
-            }
+            client
+                .get("${AnimeConstants.BASE_URL}/anime/$malId/characters")
+                .body<CharactersResponse>()
+                .data.map { it.toCharacter() }
         }
     }
 
-    override suspend fun getRecommendations(type: String): Resource<List<Recommendation>> {
+    override suspend fun getReviews(malId: Int): Resource<List<Review>> {
+        return requestCatch {
+            client
+                .get("${AnimeConstants.BASE_URL}/anime/$malId/reviews")
+                .body<ReviewResponse>()
+                .data.map { it.toReview() }
+        }
+    }
+
+    override suspend fun getRecommendations(): Resource<List<Recommendation>> {
         return requestCatch {
             buildList {
                 client
-                    .get("${AnimeConstants.BASE_URL}/recommendations/$type")
+                    .get("${AnimeConstants.BASE_URL}/recommendations/anime")
                     .body<RecommendationsResponse>().recommendations
                     .forEach { recommendationPerUser ->
                         addAll(recommendationPerUser.entry.map { it.toRecommendation() })
@@ -101,25 +85,18 @@ class AnimeRepositoryImpl(
         }
     }
 
-    override suspend fun <T> getTop(type: String): Resource<List<T>> {
+    override suspend fun getTop(): Resource<List<Anime>> {
         return requestCatch {
-            if (type == "anime") {
-                client
-                    .get("${AnimeConstants.BASE_URL}/top/anime")
-                    .body<SearchResponse<AnimeDto>>()
-                    .data.map { it.toAnime() }
-            } else {
-                client
-                    .get("${AnimeConstants.BASE_URL}/top/manga")
-                    .body<SearchResponse<MangaDto>>()
-                    .data.map { it.toManga() }
-            } as List<T>
+            client
+                .get("${AnimeConstants.BASE_URL}/top/anime")
+                .body<SearchResponse<AnimeDto>>()
+                .data.map { it.toAnime() }
         }
     }
 
-    override suspend fun getImageBackground(name: String, type: String): String {
+    override suspend fun getImageBackground(name: String): String {
         return client.get {
-            url("https://kitsu.io/api/edge/$type?fields[$type]=canonicalTitle,coverImage&filter[text]=$name")
+            url("https://kitsu.io/api/edge/anime?fields[anime]=canonicalTitle,coverImage&filter[text]=$name")
         }.body<KitsuResponse>()
             .data.firstOrNull { it.attributes.canonicalTitle.contains(name, true) }
             ?.attributes?.coverImage?.original.orEmpty()

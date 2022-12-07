@@ -65,8 +65,8 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.rememberPagerState
 import com.jefisu.anlist.R
 import com.jefisu.anlist.core.presentation.CustomIcon
-import com.jefisu.anlist.data.dto.jikan_moe.character.AnimeCharacters
-import com.jefisu.anlist.data.dto.jikan_moe.review.AnimeReviews
+import com.jefisu.anlist.data.dto.jikan_moe.character.CharactersResponse
+import com.jefisu.anlist.data.dto.jikan_moe.review.ReviewResponse
 import com.jefisu.anlist.data.dto.jikan_moe.search.AnimeDto
 import com.jefisu.anlist.data.dto.jikan_moe.search.SearchResponse
 import com.jefisu.anlist.domain.model.Anime
@@ -421,10 +421,10 @@ fun PreviewDetailScreen() {
         .data.map { it.toAnime() }
         .first()
     val charactersParsed = Json
-        .decodeFromString<AnimeCharacters>(charactersJson)
+        .decodeFromString<CharactersResponse>(charactersJson)
         .data.map { it.toCharacter() }
     val reviewsParsed = Json
-        .decodeFromString<AnimeReviews>(reviewsJson)
+        .decodeFromString<ReviewResponse>(reviewsJson)
         .data.map { it.toReview() }
 
     DetailScreen(

@@ -3,11 +3,8 @@ package com.jefisu.anlist.data.dto.jikan_moe.review
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-typealias AnimeReviews = ReviewResponse<AnimeReview>
-typealias MangaReviews = ReviewResponse<MangaReview>
-
 @Serializable
-data class ReviewResponse<T>(
-    @SerialName("data") val data: List<T>,
+data class ReviewResponse(
+    @SerialName("data") val data: List<AnimeReview>,
     val pagination: Pagination
 )
