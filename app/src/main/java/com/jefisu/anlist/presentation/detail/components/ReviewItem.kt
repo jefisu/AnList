@@ -73,20 +73,3 @@ fun ReviewItem(
         }
     }
 }
-
-/*
-@Preview
-@Composable
-fun PreviewReviewItem() {
-    ReviewItem(
-        review = Review(
-            profileImage = R.drawable.jefisu_profile,
-            username = "jefisu",
-            text = LoremIpsum(30).values.first(),
-            date = "11/21/2022",
-        ),
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-    )
-}*/
