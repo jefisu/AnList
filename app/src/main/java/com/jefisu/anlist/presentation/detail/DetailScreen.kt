@@ -140,17 +140,6 @@ fun DetailScreen(
                     .height(228.dp)
                     .clip(RoundedCornerShape(0.dp, 0.dp, 24.dp, 24.dp))
             )
-
-           /* Image(
-                painter = painterResource(id = anime.imageBackground),
-                contentDescription = null,
-                colorFilter = ColorFilter.tint(Color.Black.copy(0.3f), BlendMode.Luminosity),
-                contentScale = ContentScale.FillWidth,
-                alpha = if (collapsingState.toolbarState.progress < 0.1f) 0f else 1f,
-                modifier = Modifier
-                    .height(228.dp)
-                    .clip(RoundedCornerShape(0.dp, 0.dp, 24.dp, 24.dp))
-            )*/
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
@@ -182,19 +171,6 @@ fun DetailScreen(
                             shape = RoundedCornerShape(12.dp)
                         )
                 )
-
-                /*Image(
-                    painter = painterResource(anime.poster),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .height(202.dp)
-                        .clip(RoundedCornerShape(12.dp))
-                        .border(
-                            width = 2.dp,
-                            color = MaterialTheme.colors.background,
-                            shape = RoundedCornerShape(12.dp)
-                        )
-                )*/
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = anime.name,
