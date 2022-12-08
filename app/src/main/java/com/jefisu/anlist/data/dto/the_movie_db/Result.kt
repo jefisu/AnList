@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Result(
-    @SerialName("backdrop_path") val backdropPath: String,
+    @SerialName("backdrop_path") val backdropPath: String?,
     @SerialName("first_air_date") val firstAirDate: String,
     @SerialName("genre_ids") val genreIds: List<Int>,
     val id: Int,
@@ -15,7 +15,7 @@ data class Result(
     @SerialName("original_name") val originalName: String,
     val overview: String,
     val popularity: Double,
-    @SerialName("poster_path") val posterPath: String,
+    @SerialName("poster_path") val posterPath: String?,
     @SerialName("vote_average") val voteAverage: Double,
     @SerialName("vote_count") val voteCount: Int
 )

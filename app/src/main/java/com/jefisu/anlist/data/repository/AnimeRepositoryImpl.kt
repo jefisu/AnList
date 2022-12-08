@@ -31,10 +31,8 @@ class AnimeRepositoryImpl(
 
     override suspend fun getAnimeById(malId: Int): Resource<Anime> {
         return requestCatch {
-            val anime = client
-                .get("${AnimeConstants.BASE_URL}/anime/$malId")
-                .body<AnimeResponse>()
-                .data.toAnime()
+            val response = client.get("${AnimeConstants.BASE_URL}/anime/$malId")
+            val anime = response.body<AnimeResponse>().data.toAnime()
             val image = getImageBackground(anime.titleEnglish)
             anime.copy(imageBackground = image.ifBlank { anime.poster })
         }
@@ -91,19 +89,20 @@ class AnimeRepositoryImpl(
 
     override suspend fun getTop(limit: Int): Resource<List<Anime>> {
         return requestCatch {
-            buildList {
-                client
-                    .get("${AnimeConstants.BASE_URL}/top/anime")
-                    .body<SearchResponse>()
-                    .data.map { it.toAnime() }
-                    .filterIndexed { i, _ -> i < limit }
-                    .forEach {
-                        val image = getImageBackground(it.titleEnglish)
-                        add(
-                            it.copy(imageBackground = image.ifBlank { it.poster })
+            val response = client.get("${AnimeConstants.BASE_URL}/top/anime")
+            val animesMapped =
+                response.body<SearchResponse>().data.map { it.toAnime() }
+
+            animesMapped.filterIndexed { index, _ -> index < limit }
+                .toMutableList()
+                .apply {
+                    onEachIndexed { index, anime ->
+                        val image = getImageBackground(anime.titleEnglish)
+                        this[index] = anime.copy(
+                            imageBackground = image.ifBlank { anime.poster }
                         )
                     }
-            }
+                }
         }
     }
 

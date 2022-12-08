@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 @HiltViewModel
@@ -23,7 +24,6 @@ class HomeViewModel @Inject constructor(
     private val isLoading = MutableStateFlow(false)
     private val topAiringAnime = MutableStateFlow(emptyList<Anime>())
     private val recommendationsAnime = MutableStateFlow(emptyList<Recommendation>())
-    private val imagesBackground = MutableStateFlow(emptyMap<Int, String>())
 
     val state = combine(
         isLoading,
@@ -43,7 +43,7 @@ class HomeViewModel @Inject constructor(
 
     fun loadingData() {
         viewModelScope.launch {
-            isLoading.value = true
+            isLoading.update { true }
             val topsAnime = async {
                 val response = repository.getTop()
                 if (response is Resource.Success) response.data.orEmpty() else emptyList()
@@ -52,28 +52,13 @@ class HomeViewModel @Inject constructor(
                 val response = repository.getRecommendations()
                 if (response is Resource.Success) response.data.orEmpty() else emptyList()
             }
-            topAiringAnime.value = topsAnime.await().filterIndexed { i, _ -> i < 5 }
-            getImageBackground()
-            recommendationsAnime.value = recommendationAnime.await()
-            isLoading.value = false
-        }
-    }
-
-    private fun getImageBackground() {
-        viewModelScope.launch {
-//            topAiringAnime.value.forEach {
-//                val image = repository.getImageBackground(it.titleEnglish)
-//                imagesBackground.value += Pair(it.malId, image)
-//            }
-//            topAiringAnime.value = topAiringAnime.value
-//                .toMutableList()
-//                .apply {
-//                    replaceAll {
-//                        if (imagesBackground.value.containsKey(it.malId)) {
-//                            it.copy(imageBackground = imagesBackground.value[it.malId])
-//                        } else it
-//                    }
-//                }
+            topAiringAnime.update {
+                topsAnime.await().filterIndexed { i, _ -> i < 5 }
+            }
+            recommendationsAnime.update {
+                recommendationAnime.await()
+            }
+            isLoading.update { false }
         }
     }
 }

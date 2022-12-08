@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 @HiltViewModel
@@ -31,7 +32,12 @@ class DetailViewModel @Inject constructor(
     private val characters = MutableStateFlow(emptyList<Character>())
 
     val state =
-        combine(isLoading, animeFlow, reviews, characters) { isLoading, anime, reviews, characters ->
+        combine(
+            isLoading,
+            animeFlow,
+            reviews,
+            characters
+        ) { isLoading, anime, reviews, characters ->
             DetailState(
                 anime = anime,
                 reviews = reviews,
@@ -45,12 +51,14 @@ class DetailViewModel @Inject constructor(
     }
 
     private fun getAnime() {
-        isLoading.value = false
+        isLoading.update { true }
         viewModelScope.launch {
             val response = repository.getAnimeById(navArgs.malId)
-            animeFlow.value = if (response is Resource.Success) response.data else null
+            animeFlow.update {
+                if (response is Resource.Success) response.data else null
+            }
             getAdditionalInfo()
-            isLoading.value = true
+            isLoading.update { false }
         }
     }
 
@@ -59,13 +67,15 @@ class DetailViewModel @Inject constructor(
         viewModelScope.launch {
             launch {
                 val response = repository.getReviews(anime.malId)
-                reviews.value =
+                reviews.update {
                     if (response is Resource.Success) response.data.orEmpty() else emptyList()
+                }
             }
             launch {
                 val response = repository.getCharacters(anime.malId)
-                characters.value =
+                characters.update {
                     if (response is Resource.Success) response.data.orEmpty() else emptyList()
+                }
             }
         }
     }
