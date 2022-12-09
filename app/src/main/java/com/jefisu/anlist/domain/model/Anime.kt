@@ -20,6 +20,6 @@ data class Anime(
     val rate: String,
     val premiered: String,
     val studios: List<String>,
-    val genres: List<Int>,
+    val genres: List<String>,
     val imageBackground: String? = null
 ) : Parcelable

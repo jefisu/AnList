@@ -1,34 +1,14 @@
 package com.jefisu.anlist.presentation.detail
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.*
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
-import androidx.compose.animation.expandHorizontally
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkHorizontally
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.*
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -36,13 +16,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.Share
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -69,6 +43,7 @@ import com.jefisu.anlist.presentation.detail.components.CharacterInfo
 import com.jefisu.anlist.presentation.detail.components.MainAnimeInfo
 import com.jefisu.anlist.presentation.detail.components.ReviewItem
 import com.jefisu.anlist.presentation.detail.components.TabsContent
+import com.jefisu.anlist.presentation.detail.util.getGenresImage
 import com.jefisu.anlist.ui.theme.DarkSlateBlue
 import com.jefisu.anlist.ui.theme.GraniteGray
 import com.jefisu.anlist.ui.theme.PhilippineGray
@@ -337,7 +312,6 @@ fun DetailScreen(
                                     }
                                 }
                             }
-
                             stringResource(R.string.review) -> {
                                 Column {
                                     reviews.forEach {
@@ -351,14 +325,13 @@ fun DetailScreen(
                                     }
                                 }
                             }
-
                             stringResource(R.string.genre) -> {
                                 FlowRow(
                                     mainAxisSpacing = 12.dp,
                                     crossAxisSpacing = 12.dp,
                                     modifier = Modifier.padding(bottom = 12.dp)
                                 ) {
-                                    anime.genres.forEach {
+                                    getGenresImage(anime.genres).forEach {
                                         Image(
                                             painter = painterResource(it),
                                             contentDescription = null,
@@ -374,39 +347,3 @@ fun DetailScreen(
         }
     }
 }
-
-/*
-@Preview
-@Composable
-fun PreviewDetailScreen() {
-    val context = LocalContext.current
-    val animeJson = context.resources
-        .openRawResource(R.raw.detail_anime)
-        .readBytes()
-        .decodeToString()
-    val charactersJson = context.resources
-        .openRawResource(R.raw.characters_anime)
-        .readBytes()
-        .decodeToString()
-    val reviewsJson = context.resources
-        .openRawResource(R.raw.reviews_anime)
-        .readBytes()
-        .decodeToString()
-
-    val animeParsed = Json
-        .decodeFromString<SearchResponse<AnimeDto>>(animeJson)
-        .data.map { it.toAnime() }
-        .first()
-    val charactersParsed = Json
-        .decodeFromString<CharactersResponse>(charactersJson)
-        .data.map { it.toCharacter() }
-    val reviewsParsed = Json
-        .decodeFromString<ReviewResponse>(reviewsJson)
-        .data.map { it.toReview() }
-
-    DetailScreen(
-        anime = animeParsed.copy(imageBackground = "https://media.kitsu.io/anime/cover_images/11/original.jpg"),
-        characters = charactersParsed,
-        reviews = reviewsParsed
-    )
-}*/

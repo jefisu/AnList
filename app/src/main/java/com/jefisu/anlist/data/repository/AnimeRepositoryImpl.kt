@@ -19,11 +19,9 @@ import com.jefisu.anlist.domain.model.mapper.toCharacter
 import com.jefisu.anlist.domain.model.mapper.toRecommendation
 import com.jefisu.anlist.domain.model.mapper.toReview
 import com.jefisu.anlist.domain.repository.AnimeRepository
-import io.ktor.client.HttpClient
-import io.ktor.client.call.body
-import io.ktor.client.request.get
-import io.ktor.client.request.parameter
-import io.ktor.client.request.url
+import io.ktor.client.*
+import io.ktor.client.call.*
+import io.ktor.client.request.*
 
 class AnimeRepositoryImpl(
     private val client: HttpClient
@@ -87,22 +85,12 @@ class AnimeRepositoryImpl(
         }
     }
 
-    override suspend fun getTop(limit: Int): Resource<List<Anime>> {
+    override suspend fun getTop(page: Int): Resource<List<Anime>> {
         return requestCatch {
-            val response = client.get("${AnimeConstants.BASE_URL}/top/anime")
-            val animesMapped =
-                response.body<SearchResponse>().data.map { it.toAnime() }
-
-            animesMapped.filterIndexed { index, _ -> index < limit }
-                .toMutableList()
-                .apply {
-                    onEachIndexed { index, anime ->
-                        val image = getImageBackground(anime.titleEnglish)
-                        this[index] = anime.copy(
-                            imageBackground = image.ifBlank { anime.poster }
-                        )
-                    }
-                }
+            val response = client.get("${AnimeConstants.BASE_URL}/top/anime?page=$page")
+            response
+                .body<SearchResponse>()
+                .data.map { it.toAnime() }
         }
     }
 

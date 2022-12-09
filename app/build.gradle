@@ -100,7 +100,6 @@ dependencies {
     // Accompanist - Google
     implementation "com.google.accompanist:accompanist-pager:0.23.1"
     implementation "com.google.accompanist:accompanist-flowlayout:0.23.1"
-    implementation "com.google.accompanist:accompanist-swiperefresh:0.23.1"
 
     // Kotlin Serialization
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1"
@@ -124,6 +123,7 @@ dependencies {
 
     // Coil
     implementation "io.coil-kt:coil-compose:2.2.2"
+    implementation "io.coil-kt:coil-gif:2.2.2"
 
     // Compose Destinations
     def destinations_version = "1.7.27-beta"

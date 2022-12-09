@@ -1,7 +1,7 @@
 package com.jefisu.anlist.core.util
 
 import com.jefisu.anlist.R
-import io.ktor.client.plugins.ResponseException
+import io.ktor.client.plugins.*
 import java.io.IOException
 
 suspend fun <T> requestCatch(
