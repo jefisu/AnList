@@ -35,8 +35,9 @@ class HomeViewModel @Inject constructor(
             isLoading = isLoading,
             topAiringAnime = animesTopFive,
             animesByGenre = topAiringAnime
-                .filter { anime -> !animesTopFive.map { it.malId }.contains(anime.malId) }
+                .dropWhile { animesTopFive.contains(it) }
                 .mapByGenre()
+                .filterValues { it.size == 10 }
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), HomeState())
 

@@ -1,4 +1,4 @@
-package com.jefisu.anlist.presentation.home.components
+package com.jefisu.anlist.core.presentation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -112,7 +112,7 @@ fun CustomCard(
                     modifier = Modifier.width(size.width - 24.dp)
                 )
                 Text(
-                    text = anime.studios.joinToString(),
+                    text = anime.studios.joinToString().ifBlank { "Unidentified studio" },
                     style = defaultTextStyle,
                     fontSize = 10.sp,
                     color = PhilippineGray

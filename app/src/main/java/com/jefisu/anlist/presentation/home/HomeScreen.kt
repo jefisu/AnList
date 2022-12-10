@@ -3,6 +3,7 @@ package com.jefisu.anlist.presentation.home
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.*
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -12,10 +13,8 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Sort
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -30,12 +29,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.jefisu.anlist.R
+import com.jefisu.anlist.core.presentation.CustomCard
 import com.jefisu.anlist.core.presentation.CustomIcon
 import com.jefisu.anlist.core.presentation.GradientProgressbar
-import com.jefisu.anlist.core.presentation.PikachuLoading
+import com.jefisu.anlist.core.presentation.LoadingGif
 import com.jefisu.anlist.presentation.destinations.DetailScreenDestination
+import com.jefisu.anlist.presentation.destinations.SearchScreenDestination
 import com.jefisu.anlist.presentation.home.components.AnimeItem
-import com.jefisu.anlist.presentation.home.components.CustomCard
 import com.jefisu.anlist.presentation.home.util.IconSeasonSettings
 import com.jefisu.anlist.ui.theme.*
 import com.ramcosta.composedestinations.annotation.Destination
@@ -74,31 +74,28 @@ fun HomeScreen(
         targetValue = if (collapsingState.toolbarState.progress == 0f) 0.dp else 16.dp
     )
     val scrollState = rememberScrollState()
-    val scope = rememberCoroutineScope()
 
-    AnimatedVisibility(
-        visible = state.isLoading,
-        enter = expandIn() + fadeIn(),
-        exit = fadeOut()
-    ) {
+    if (state.isLoading) {
         Column(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            PikachuLoading()
-            Spacer(modifier = Modifier.height(8.dp))
-            GradientProgressbar(progress = state.progress)
+            LoadingGif(
+                content = R.drawable.pikachu_walking
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            GradientProgressbar(
+                progress = state.progress,
+                indicatorPadding = 60.dp
+            )
         }
     }
 
     AnimatedVisibility(
         visible = !state.isLoading && state.topAiringAnime.isNotEmpty(),
-        enter = slideInHorizontally(
-            animationSpec = tween(durationMillis = 300, easing = LinearEasing),
-            initialOffsetX = { -it }
-        ) + fadeIn(),
-        exit = slideOutHorizontally(animationSpec = tween(durationMillis = 300, easing = LinearEasing)) + fadeOut()
+        enter = fadeIn(animationSpec = tween(durationMillis = 1000)),
+        exit = fadeOut(animationSpec = tween(durationMillis = 1000))
     ) {
         CollapsingToolbarScaffold(
             state = collapsingState,
@@ -152,7 +149,13 @@ fun HomeScreen(
                                 .height(53.dp)
                                 .clip(RoundedCornerShape(16.dp))
                                 .background(Platinum)
-                                .clickable {}
+                                .clickable(
+                                    interactionSource = remember { MutableInteractionSource() },
+                                    indication = rememberRipple(),
+                                    onClick = {
+                                        navigator.navigate(SearchScreenDestination())
+                                    }
+                                )
                                 .padding(16.dp)
                         ) {
                             Row {
@@ -210,7 +213,9 @@ fun HomeScreen(
                     )
                     AnimatedVisibility(visible = collapsingState.toolbarState.progress < 0.15f) {
                         IconButton(
-                            onClick = { }
+                            onClick = {
+                                navigator.navigate(SearchScreenDestination())
+                            }
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Search,
@@ -263,30 +268,32 @@ fun HomeScreen(
                     }
                 }
                 Spacer(modifier = Modifier.height(16.dp))
-                animesByGenre.forEach { (genre, animes) ->
-                    Text(
-                        text = genre,
-                        style = defaultTextStyle,
-                        fontSize = 14.sp,
-                        color = DarkSlateBlue,
-                        modifier = Modifier.padding(start = 16.dp)
-                    )
-                    Spacer(modifier = Modifier.height(12.dp))
-                    LazyRow {
-                        itemsIndexed(animes) { index, anime ->
-                            AnimeItem(
-                                anime = anime,
-                                onClick = {
-                                    navigator.navigate(DetailScreenDestination(anime.malId))
-                                },
-                                modifier = Modifier.padding(
-                                    start = if (index == 0) 16.dp else 0.dp
+                animesByGenre.onEachIndexed { index, (genre, animes) ->
+                    if (index in 0..5) {
+                        Text(
+                            text = genre,
+                            style = defaultTextStyle,
+                            fontSize = 14.sp,
+                            color = DarkSlateBlue,
+                            modifier = Modifier.padding(start = 16.dp)
+                        )
+                        Spacer(modifier = Modifier.height(12.dp))
+                        LazyRow {
+                            itemsIndexed(animes) { index, anime ->
+                                AnimeItem(
+                                    anime = anime,
+                                    onClick = {
+                                        navigator.navigate(DetailScreenDestination(anime.malId))
+                                    },
+                                    modifier = Modifier.padding(
+                                        start = if (index == 0) 16.dp else 0.dp
+                                    )
                                 )
-                            )
-                            Spacer(modifier = Modifier.width(12.dp))
+                                Spacer(modifier = Modifier.width(12.dp))
+                            }
                         }
+                        Spacer(modifier = Modifier.height(12.dp))
                     }
-                    Spacer(modifier = Modifier.height(12.dp))
                 }
             }
         }

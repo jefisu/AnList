@@ -1,7 +1,9 @@
 package com.jefisu.anlist.data.repository
 
 import com.jefisu.anlist.BuildConfig
+import com.jefisu.anlist.R
 import com.jefisu.anlist.core.util.Resource
+import com.jefisu.anlist.core.util.UiText
 import com.jefisu.anlist.core.util.requestCatch
 import com.jefisu.anlist.data.AnimeConstants
 import com.jefisu.anlist.data.dto.jikan_moe.AnimeResponse
@@ -21,7 +23,9 @@ import com.jefisu.anlist.domain.model.mapper.toReview
 import com.jefisu.anlist.domain.repository.AnimeRepository
 import io.ktor.client.*
 import io.ktor.client.call.*
+import io.ktor.client.plugins.*
 import io.ktor.client.request.*
+import java.io.IOException
 
 class AnimeRepositoryImpl(
     private val client: HttpClient
@@ -37,11 +41,25 @@ class AnimeRepositoryImpl(
     }
 
     override suspend fun searchAnime(name: String): Resource<List<Anime>> {
-        return requestCatch {
-            client
-                .get("${AnimeConstants.BASE_URL}/anime?q=$name")
+        if (name.isEmpty()) {
+            return Resource.Success(emptyList())
+        }
+        return try {
+            val response = client.get("${AnimeConstants.BASE_URL}/anime?q=$name")
                 .body<SearchResponse>()
                 .data.map { it.toAnime() }
+            if (response.isEmpty()) {
+                return Resource.Error(UiText.StringResource(R.string.no_results_found_try_searching_again))
+            }
+            Resource.Success(response)
+        } catch (_: ResponseException) {
+            Resource.Error(
+                UiText.StringResource(R.string.oops_something_went_wrong)
+            )
+        } catch (_: IOException) {
+            Resource.Error(
+                UiText.StringResource(R.string.error_couldnt_reach_server)
+            )
         }
     }
 

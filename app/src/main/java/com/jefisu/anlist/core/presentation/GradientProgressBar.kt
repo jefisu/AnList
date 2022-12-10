@@ -75,9 +75,4 @@ fun GradientProgressbar(
             end = Offset(x = progress, y = 0f)
         )
     }
-    Spacer(modifier = Modifier.height(8.dp))
-    Text(
-        text = "${progress.toInt()}%",
-        style = numberStyle
-    )
 }
