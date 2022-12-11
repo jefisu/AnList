@@ -1,151 +1,114 @@
 package com.jefisu.anlist.presentation.detail.components
 
-import androidx.compose.animation.animateColor
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.core.updateTransition
-import androidx.compose.foundation.clickable
+import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Divider
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.flowlayout.FlowMainAxisAlignment
 import com.google.accompanist.flowlayout.FlowRow
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.PagerState
-import com.jefisu.anlist.ui.theme.ChineseWhite
+import com.google.accompanist.pager.rememberPagerState
+import com.jefisu.anlist.domain.model.Character
+import com.jefisu.anlist.domain.model.Review
 import com.jefisu.anlist.ui.theme.DarkSlateBlue
 import com.jefisu.anlist.ui.theme.PhilippineGray
 import com.jefisu.anlist.ui.theme.defaultTextStyle
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun TabsContent(
-    pagerState: PagerState,
-    scope: CoroutineScope,
-    tabsName: List<String>,
-    content: @Composable (String) -> Unit,
+fun CustomTabs(
+    tabs: List<String>,
+    characters: List<Character>,
+    reviews: List<Review>,
+    genres: List<Int>,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier) {
-        TabsDetails(
-            pagerState = pagerState,
-            scope = scope,
-            tabsName = tabsName
-        )
+    val pagerState = rememberPagerState()
+    val scope = rememberCoroutineScope()
+
+    Column {
+        TabRow(
+            selectedTabIndex = pagerState.currentPage,
+            backgroundColor = Color.Transparent,
+            contentColor = DarkSlateBlue,
+            modifier = modifier
+        ) {
+            tabs.forEachIndexed { index, tab ->
+                Tab(
+                    selected = index == pagerState.currentPage,
+                    selectedContentColor = DarkSlateBlue,
+                    unselectedContentColor = PhilippineGray,
+                    onClick = {
+                        scope.launch { pagerState.scrollToPage(index) }
+                    },
+                    modifier = Modifier.padding(bottom = 6.dp)
+                ) {
+                    Text(
+                        text = tab,
+                        fontSize = defaultTextStyle.fontSize,
+                        fontWeight = FontWeight.Medium,
+                        fontFamily = defaultTextStyle.fontFamily
+                    )
+                }
+            }
+        }
         Spacer(modifier = Modifier.height(8.dp))
         HorizontalPager(
-            count = tabsName.size,
+            count = tabs.size,
             state = pagerState,
-            content = { content(tabsName[currentPage]) }
-        )
-    }
-}
-
-@OptIn(ExperimentalPagerApi::class)
-@Composable
-fun TabsDetails(
-    pagerState: PagerState,
-    scope: CoroutineScope,
-    tabsName: List<String>,
-    modifier: Modifier = Modifier,
-    dividerColor: Color = ChineseWhite
-) {
-    Box(
-        modifier = modifier
-    ) {
-        Divider(
-            color = dividerColor,
-            modifier = Modifier.align(Alignment.BottomStart)
-        )
-        FlowRow(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-            mainAxisAlignment = FlowMainAxisAlignment.SpaceBetween
         ) {
-            tabsName.forEachIndexed { index, tab ->
-                CustomTab(
-                    selected = pagerState.currentPage == index,
-                    text = tab,
-                    selectedColor = DarkSlateBlue,
-                    unselectedColor = PhilippineGray,
-                    dividerUnselectedColor = dividerColor,
-                    modifier = Modifier
-                        .clickable {
-                            scope.launch { pagerState.scrollToPage(index) }
+            when (tabs[currentPage]) {
+                tabs[0] -> {
+                    FlowRow(
+                        mainAxisSpacing = 16.dp,
+                        crossAxisSpacing = 8.dp,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    ) {
+                        characters.forEachIndexed { index, character ->
+                            CharacterInfo(
+                                character = character,
+                                modifier = Modifier.width(164.dp)
+                            )
                         }
-                )
+                    }
+                }
+                tabs[1] -> {
+                    Column {
+                        reviews.forEach {
+                            ReviewItem(
+                                review = it,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .animateContentSize()
+                            )
+                            Spacer(modifier = Modifier.height(12.dp))
+                        }
+                    }
+                }
+                tabs[2] -> {
+                    FlowRow(
+                        mainAxisSpacing = 12.dp,
+                        crossAxisSpacing = 12.dp,
+                        modifier = Modifier.padding(bottom = 12.dp)
+                    ) {
+                        genres.forEach {
+                            Image(
+                                painter = painterResource(it),
+                                contentDescription = null,
+                                modifier = Modifier.height(94.dp)
+                            )
+                        }
+                    }
+                }
             }
         }
-    }
-}
-
-@Composable
-private fun CustomTab(
-    selected: Boolean,
-    text: String,
-    selectedColor: Color,
-    unselectedColor: Color,
-    dividerUnselectedColor: Color,
-    modifier: Modifier = Modifier
-) {
-    val transition = updateTransition(targetState = selected, label = null)
-    val textColor by transition.animateColor(
-        label = "",
-        targetValueByState = { if (it) selectedColor else unselectedColor },
-        transitionSpec = {
-            if (false isTransitioningTo true) {
-                tween(
-                    durationMillis = 150,
-                    delayMillis = 100,
-                    easing = LinearEasing
-                )
-            } else {
-                tween(
-                    durationMillis = 100,
-                    easing = LinearEasing
-                )
-            }
-        }
-    )
-    val dividerColor by transition.animateColor(
-        label = "",
-        targetValueByState = { if (it) selectedColor else dividerUnselectedColor },
-        transitionSpec = {
-            if (false isTransitioningTo true) {
-                tween(
-                    durationMillis = 150,
-                    delayMillis = 100,
-                    easing = LinearEasing
-                )
-            } else {
-                tween(
-                    durationMillis = 100,
-                    easing = LinearEasing
-                )
-            }
-        }
-    )
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(6.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = text,
-            style = defaultTextStyle,
-            color = textColor
-        )
-        Divider(
-            modifier = Modifier.width(40.dp),
-            color = dividerColor
-        )
     }
 }

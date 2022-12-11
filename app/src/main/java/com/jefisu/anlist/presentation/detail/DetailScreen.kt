@@ -26,7 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -36,13 +36,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.google.accompanist.flowlayout.FlowRow
 import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.rememberPagerState
 import com.jefisu.anlist.R
 import com.jefisu.anlist.core.presentation.CustomIcon
-import com.jefisu.anlist.presentation.detail.components.CharacterInfo
+import com.jefisu.anlist.presentation.detail.components.CustomTabs
 import com.jefisu.anlist.presentation.detail.components.MainAnimeInfo
-import com.jefisu.anlist.presentation.detail.components.ReviewItem
-import com.jefisu.anlist.presentation.detail.components.TabsContent
 import com.jefisu.anlist.presentation.detail.util.getGenresImage
 import com.jefisu.anlist.ui.theme.DarkSlateBlue
 import com.jefisu.anlist.ui.theme.GraniteGray
@@ -287,61 +284,11 @@ fun DetailScreen(
                         .clickable { showAll = !showAll }
                 )
                 Spacer(modifier = Modifier.height(8.dp))
-                TabsContent(
-                    pagerState = rememberPagerState(),
-                    scope = rememberCoroutineScope(),
-                    tabsName = listOf(
-                        stringResource(R.string.character),
-                        stringResource(R.string.review),
-                        stringResource(R.string.genre)
-                    ),
-                    modifier = Modifier.fillMaxWidth(),
-                    content = { tab ->
-                        when (tab) {
-                            stringResource(R.string.character) -> {
-                                FlowRow(
-                                    mainAxisSpacing = 16.dp,
-                                    crossAxisSpacing = 8.dp,
-                                    modifier = Modifier.padding(bottom = 8.dp)
-                                ) {
-                                    characters.forEach { character ->
-                                        CharacterInfo(
-                                            character = character,
-                                            modifier = Modifier.width(164.dp)
-                                        )
-                                    }
-                                }
-                            }
-                            stringResource(R.string.review) -> {
-                                Column {
-                                    reviews.forEach {
-                                        ReviewItem(
-                                            review = it,
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .animateContentSize()
-                                        )
-                                        Spacer(modifier = Modifier.height(12.dp))
-                                    }
-                                }
-                            }
-                            stringResource(R.string.genre) -> {
-                                FlowRow(
-                                    mainAxisSpacing = 12.dp,
-                                    crossAxisSpacing = 12.dp,
-                                    modifier = Modifier.padding(bottom = 12.dp)
-                                ) {
-                                    getGenresImage(anime.genres).forEach {
-                                        Image(
-                                            painter = painterResource(it),
-                                            contentDescription = null,
-                                            modifier = Modifier.height(94.dp)
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
+                CustomTabs(
+                    tabs = stringArrayResource(R.array.tabs).asList(),
+                    characters = characters,
+                    reviews = reviews,
+                    genres = getGenresImage(anime.genres)
                 )
             }
         }
