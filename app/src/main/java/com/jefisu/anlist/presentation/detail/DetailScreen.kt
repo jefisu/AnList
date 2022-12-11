@@ -38,6 +38,7 @@ import com.google.accompanist.flowlayout.FlowRow
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.jefisu.anlist.R
 import com.jefisu.anlist.core.presentation.CustomIcon
+import com.jefisu.anlist.core.presentation.LoadingGif
 import com.jefisu.anlist.presentation.detail.components.CustomTabs
 import com.jefisu.anlist.presentation.detail.components.MainAnimeInfo
 import com.jefisu.anlist.presentation.detail.util.getGenresImage
@@ -83,6 +84,17 @@ fun DetailScreen(
     }
     val alphaBoxAnim by transition.animateFloat(label = "") { progress ->
         if (progress == 0f) 1f else 0f
+    }
+
+    if (state.isLoading) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            LoadingGif(
+                content = R.drawable.pikachu_walking
+            )
+        }
     }
 
     state.anime?.let { anime ->
