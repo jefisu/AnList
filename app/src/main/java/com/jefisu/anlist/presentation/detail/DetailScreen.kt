@@ -222,7 +222,15 @@ fun DetailScreen(
                         modifier = Modifier.padding(end = 8.dp)
                     ) {
                         IconButton(
-                            onClick = { /*TODO*/ }
+                            onClick = {
+                                val sendIntent = Intent().apply {
+                                    action = Intent.ACTION_SEND
+                                    putExtra(Intent.EXTRA_TEXT, state.anime?.malUrl)
+                                    type = "text/plain"
+                                }
+                                val shareIntent = Intent.createChooser(sendIntent, null)
+                                context.startActivity(shareIntent)
+                            }
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Share,
