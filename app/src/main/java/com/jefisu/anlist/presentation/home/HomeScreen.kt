@@ -1,5 +1,6 @@
 package com.jefisu.anlist.presentation.home
 
+import android.widget.Toast
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.*
@@ -22,6 +23,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
@@ -35,6 +37,7 @@ import com.jefisu.anlist.core.presentation.GradientProgressbar
 import com.jefisu.anlist.core.presentation.LoadingGif
 import com.jefisu.anlist.presentation.destinations.DetailScreenDestination
 import com.jefisu.anlist.presentation.destinations.SearchScreenDestination
+import com.jefisu.anlist.presentation.destinations.SeasonScreenDestination
 import com.jefisu.anlist.presentation.home.components.AnimeItem
 import com.jefisu.anlist.presentation.home.util.IconSeasonSettings
 import com.jefisu.anlist.ui.theme.*
@@ -74,6 +77,7 @@ fun HomeScreen(
         targetValue = if (collapsingState.toolbarState.progress == 0f) 0.dp else 16.dp
     )
     val scrollState = rememberScrollState()
+    val context = LocalContext.current
 
     if (state.isLoading) {
         Column(
@@ -263,7 +267,13 @@ fun HomeScreen(
                         CustomIcon(
                             icon = it.icon,
                             text = it.title,
-                            onClick = { }
+                            onClick = {
+                                if (it.title == "Schedule") {
+                                    Toast.makeText(context, "Is not implemented", Toast.LENGTH_SHORT).show()
+                                    return@CustomIcon
+                                }
+                                navigator.navigate(SeasonScreenDestination(LocalDate.now().year, it.title))
+                            }
                         )
                     }
                 }
