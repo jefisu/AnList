@@ -3,7 +3,6 @@ package com.jefisu.anlist.core.presentation
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
@@ -20,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jefisu.anlist.ui.theme.DarkSlateBlue
 import com.jefisu.anlist.ui.theme.Lavender
+import com.jefisu.anlist.ui.theme.clickRipple
 import com.jefisu.anlist.ui.theme.defaultTextStyle
 
 @Composable
@@ -49,7 +49,7 @@ fun CustomIcon(
             modifier = Modifier
                 .clip(shape)
                 .background(color)
-                .clickable { onClick() }
+                .clickRipple { onClick() }
                 .padding(paddingValues)
                 .size(size)
         )

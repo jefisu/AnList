@@ -3,21 +3,17 @@ package com.jefisu.anlist.core.presentation
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.jefisu.anlist.ui.theme.DarkSlateBlue
-import com.jefisu.anlist.ui.theme.defaultTextStyle
 
 @Composable
 fun GradientProgressbar(
@@ -30,11 +26,6 @@ fun GradientProgressbar(
         Color(0xFF40c7e7),
         Color(0xFF6ce0c4),
         Color(0xFF40c7e7)
-    ),
-    numberStyle: TextStyle = defaultTextStyle.copy(
-        fontSize = 32.sp,
-        fontWeight = FontWeight.Bold,
-        color = DarkSlateBlue
     ),
     animationDuration: Int = 1000,
     animationDelay: Int = 0
@@ -62,7 +53,7 @@ fun GradientProgressbar(
             end = Offset(x = size.width, y = 0f)
         )
 
-        val progress =
+        val progressInner =
             (animateNumber.value / 100) * size.width
 
         drawLine(
@@ -72,7 +63,7 @@ fun GradientProgressbar(
             cap = StrokeCap.Round,
             strokeWidth = size.height,
             start = Offset(x = 0f, y = 0f),
-            end = Offset(x = progress, y = 0f)
+            end = Offset(x = progressInner, y = 0f)
         )
     }
 }

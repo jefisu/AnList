@@ -4,7 +4,6 @@ import android.widget.Toast
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.*
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -14,7 +13,6 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Sort
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -153,13 +151,9 @@ fun HomeScreen(
                                 .height(53.dp)
                                 .clip(RoundedCornerShape(16.dp))
                                 .background(Platinum)
-                                .clickable(
-                                    interactionSource = remember { MutableInteractionSource() },
-                                    indication = rememberRipple(),
-                                    onClick = {
-                                        navigator.navigate(SearchScreenDestination())
-                                    }
-                                )
+                                .clickRipple {
+                                    navigator.navigate(SearchScreenDestination())
+                                }
                                 .padding(16.dp)
                         ) {
                             Row {

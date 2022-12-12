@@ -1,15 +1,12 @@
 package com.jefisu.anlist.core.presentation
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,6 +25,7 @@ import coil.compose.AsyncImage
 import com.jefisu.anlist.domain.model.Anime
 import com.jefisu.anlist.ui.theme.DarkSlateBlue
 import com.jefisu.anlist.ui.theme.PhilippineGray
+import com.jefisu.anlist.ui.theme.clickRipple
 import com.jefisu.anlist.ui.theme.defaultTextStyle
 
 @Composable
@@ -45,11 +43,7 @@ fun CustomCard(
         modifier = Modifier
             .padding(paddingValues)
             .clip(shape)
-            .clickable(
-                onClick = onClick,
-                interactionSource = remember { MutableInteractionSource() },
-                indication = rememberRipple()
-            )
+            .clickRipple { onClick() }
             .then(modifier)
     ) {
         Box {
