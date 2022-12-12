@@ -1,5 +1,7 @@
 package com.jefisu.anlist.presentation.detail
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.animation.*
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
@@ -26,6 +28,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -65,6 +68,7 @@ fun DetailScreen(
     val reviews = state.reviews
     val characters = state.characters
 
+    val context = LocalContext.current
     var showAll by remember { mutableStateOf(false) }
     var showAllStats by remember { mutableStateOf(false) }
     val rotateIconSynopsisAnim by animateFloatAsState(
@@ -84,6 +88,12 @@ fun DetailScreen(
     }
     val alphaBoxAnim by transition.animateFloat(label = "") { progress ->
         if (progress == 0f) 1f else 0f
+    }
+    val openYoutubeTrailer = remember {
+        Intent(
+            Intent.ACTION_VIEW,
+            Uri.parse("https://www.youtube.com/watch?v=${state.anime?.trailerYoutubeId}")
+        )
     }
 
     if (state.isLoading) {
@@ -138,7 +148,10 @@ fun DetailScreen(
                         textStyle = defaultTextStyle.copy(
                             fontSize = 14.sp,
                             color = Color.White
-                        )
+                        ),
+                        onClick = {
+                            context.startActivity(openYoutubeTrailer)
+                        }
                     )
                     Spacer(modifier = Modifier.height(20.dp))
                     AsyncImage(
