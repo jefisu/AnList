@@ -92,7 +92,7 @@ fun CustomCard(
                         modifier = Modifier.size(8.dp)
                     )
                     Text(
-                        text = anime.rate,
+                        text = anime.rate?.run { String.format("%.2f", this) } ?: "No rating",
                         style = defaultTextStyle,
                         fontSize = 12.sp,
                         color = Color.Yellow.copy(0.8f)

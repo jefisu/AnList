@@ -248,7 +248,7 @@ fun DetailScreen(
                     modifier = Modifier.animateContentSize()
                 ) {
                     MainAnimeInfo(
-                        value = anime.rate,
+                        value = anime.rate?.run { String.format("%.2f", this) } ?: "No rating",
                         info = stringResource(R.string.rate)
                     )
                     MainAnimeInfo(

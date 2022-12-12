@@ -17,7 +17,7 @@ data class Anime(
     val episodes: Int,
     val status: String,
     val duration: String,
-    val rate: String,
+    val rate: Float?,
     val premiered: String,
     val studios: List<String>,
     val genres: List<String>,

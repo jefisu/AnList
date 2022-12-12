@@ -29,7 +29,7 @@ class SeasonViewModel @Inject constructor(
 
     val state = combine(animes, isLoading, error) { animes, isLoading, error ->
         SeasonState(
-            animes = animes,
+            animes = animes.sortedByDescending { it.rate },
             isLoading = isLoading,
             year = navArgs.year,
             season = navArgs.season,
