@@ -1,9 +1,6 @@
 package com.jefisu.anlist.core.presentation
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -28,10 +25,11 @@ fun ErrorScreen(
         verticalArrangement = Arrangement.Center
     ) {
         AsyncImage(
-            model = R.drawable.pikachu_looking,
+            model = R.drawable.pikachu_thinking,
             contentDescription = null,
             modifier = Modifier.size(200.dp)
         )
+        Spacer(modifier = Modifier.height(16.dp))
         Text(
             text = error.asString(),
             style = defaultTextStyle,
