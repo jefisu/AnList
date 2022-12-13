@@ -34,16 +34,15 @@ class AnimeRepositoryImpl(
         }
     }
 
-    override suspend fun searchAnime(name: String): Resource<List<Anime>> {
+    override suspend fun searchAnime(name: String, page: Int): Resource<DataResponse<Anime>> {
         if (name.isEmpty()) {
-            return Resource.Success(emptyList())
+            return Resource.Success(DataResponse(emptyList(), 0))
         }
         return try {
-            val response = client.get("${AnimeConstants.BASE_URL}/anime?q=$name")
+            val response = client.get("${AnimeConstants.BASE_URL}/anime?q=$name&page=$page")
                 .body<SearchResponse>()
                 .toDataResponse()
-                .items
-            if (response.isEmpty()) {
+            if (response.totalItems == 0) {
                 return Resource.Error(UiText.StringResource(R.string.no_results_found_try_searching_again))
             }
             Resource.Success(response)

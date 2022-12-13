@@ -7,16 +7,19 @@ import com.jefisu.anlist.core.util.UiText
 import com.jefisu.anlist.domain.model.Anime
 import com.jefisu.anlist.domain.repository.AnimeRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
     private val repository: AnimeRepository
 ) : ViewModel() {
+
+    private var page = 1
+    private var totalAnimes = 0
 
     private val query = MutableStateFlow("")
     private val searchResult = MutableStateFlow(emptyList<Anime>())
@@ -35,11 +38,18 @@ class SearchViewModel @Inject constructor(
             )
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), SearchState())
 
-    fun searchAnimes(value: String) {
+    fun onTextChange(value: String) {
         query.update { value }
         searchResult.update { emptyList() }
         if (value.isEmpty() || value.isBlank()) {
             error.update { null }
+            return
+        }
+        searchAnimes()
+    }
+
+    fun searchAnimes() {
+        if (totalAnimes > 0 && searchResult.value.size == totalAnimes) {
             return
         }
 
@@ -47,10 +57,12 @@ class SearchViewModel @Inject constructor(
         searchJob = viewModelScope.launch {
             isLoading.update { true }
             delay(300L)
-            val response = repository.searchAnime(query.value)
+            val response = repository.searchAnime(query.value, page)
             when (response) {
                 is Resource.Success -> {
-                    searchResult.update { response.data.orEmpty() }
+                    searchResult.update { it + response.data?.items.orEmpty() }
+                    totalAnimes = response.data?.totalItems ?: 0
+                    page++
                     error.update { null }
                 }
                 is Resource.Error -> {

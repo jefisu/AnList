@@ -9,9 +9,9 @@ import com.jefisu.anlist.domain.model.Anime
 import com.jefisu.anlist.domain.repository.AnimeRepository
 import com.jefisu.anlist.presentation.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltViewModel
 class SeasonViewModel @Inject constructor(

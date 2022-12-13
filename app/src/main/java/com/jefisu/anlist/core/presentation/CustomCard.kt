@@ -109,7 +109,9 @@ fun CustomCard(
                     text = anime.studios.joinToString().ifBlank { "Unidentified studio" },
                     style = defaultTextStyle,
                     fontSize = 10.sp,
-                    color = PhilippineGray
+                    color = PhilippineGray,
+                    maxLines = 1,
+                    modifier = Modifier.width(size.width - 24.dp)
                 )
             }
         }
