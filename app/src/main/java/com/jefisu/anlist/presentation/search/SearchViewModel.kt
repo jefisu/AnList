@@ -7,11 +7,11 @@ import com.jefisu.anlist.core.util.UiText
 import com.jefisu.anlist.domain.model.Anime
 import com.jefisu.anlist.domain.repository.AnimeRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
