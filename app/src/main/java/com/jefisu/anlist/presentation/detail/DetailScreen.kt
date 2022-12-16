@@ -5,11 +5,8 @@ import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.expandHorizontally
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -24,10 +21,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -49,12 +50,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -66,8 +69,10 @@ import com.jefisu.anlist.R
 import com.jefisu.anlist.core.presentation.CustomIcon
 import com.jefisu.anlist.core.presentation.LoadingGif
 import com.jefisu.anlist.core.presentation.RotateIcon
-import com.jefisu.anlist.presentation.detail.components.CharacterItem
+import com.jefisu.anlist.presentation.detail.components.CharacterVoiceActorItem
 import com.jefisu.anlist.presentation.detail.components.MainAnimeInfo
+import com.jefisu.anlist.presentation.detail.components.ReviewItem
+import com.jefisu.anlist.presentation.detail.util.getGenresImage
 import com.jefisu.anlist.ui.theme.DarkSlateBlue
 import com.jefisu.anlist.ui.theme.GraniteGray
 import com.jefisu.anlist.ui.theme.PhilippineGray
@@ -89,7 +94,6 @@ fun DetailScreen(
 ) {
     val state by viewModel.state.collectAsState()
 
-    var showAll by remember { mutableStateOf(false) }
     var showAllStats by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
@@ -119,6 +123,7 @@ fun DetailScreen(
 
     val sheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
     val scope = rememberCoroutineScope()
+    var showInfo by remember { mutableStateOf("") }
 
     if (state.isLoading) {
         Box(
@@ -134,18 +139,78 @@ fun DetailScreen(
     state.anime?.let { anime ->
         ModalBottomSheetLayout(
             sheetState = sheetState,
+            sheetShape = RoundedCornerShape(16.dp, 16.dp, 0.dp, 0.dp),
             sheetContent = {
-                Box(
-                    contentAlignment = Alignment.Center,
+                Spacer(modifier = Modifier.height(12.dp))
+                Divider(
+                    color = PhilippineGray,
+                    thickness = 3.dp,
+                    modifier = Modifier
+                        .width(80.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                        .align(Alignment.CenterHorizontally)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = showInfo,
+                    style = defaultTextStyle,
+                    fontSize = 14.sp,
+                    color = DarkSlateBlue,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                when (showInfo) {
+                    stringResource(R.string.character_voice_actor) -> {
+                        LazyRow {
+                            item {
+                                Spacer(modifier = Modifier.width(16.dp))
+                            }
+                            itemsIndexed(state.characters) { i, character ->
+                                Column(
+                                    modifier = Modifier.padding(
+                                        end = if (i == state.characters.lastIndex) 16.dp else 8.dp
+                                    )
+                                ) {
+                                    CharacterVoiceActorItem(
+                                        name = character.name,
+                                        image = character.image
+                                    )
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    CharacterVoiceActorItem(
+                                        name = character.voiceActorName.orEmpty(),
+                                        image = character.voiceActorImage
+                                    )
+                                }
+                            }
+                        }
+                    }
+                    stringResource(R.string.synopsis) -> {
+                        Text(
+                            text = anime.synopsis,
+                            color = GraniteGray,
+                            textAlign = TextAlign.Justify,
+                            fontSize = 12.sp,
+                            fontFamily = interFontFamily,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp)
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                Button(
+                    onClick = { scope.launch { sheetState.hide() } },
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = DarkSlateBlue
+                    ),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(300.dp)
-                        .background(Color.Green)
+                        .padding(horizontal = 16.dp)
                 ) {
-                    /* TODO */
                     Text(
-                        text = "Implement this",
-                        fontSize = 32.sp
+                        text = stringResource(R.string.hide),
+                        style = defaultTextStyle
                     )
                 }
             }
@@ -202,46 +267,35 @@ fun DetailScreen(
                                 tint = Color.White
                             )
                         }
-                        AnimatedVisibility(
-                            visible = visibility > 0.89f,
-                            enter = fadeIn() + expandHorizontally(),
-                            exit = fadeOut() + shrinkHorizontally(),
+                        Text(
+                            text = anime.title,
+                            style = defaultTextStyle,
+                            fontSize = 18.sp,
+                            color = Color.White,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
                             modifier = Modifier
+                                .alpha(visibility)
                                 .weight(1f)
-                                .padding(end = 32.dp, start = 8.dp)
-                        ) {
-                            Text(
-                                text = anime.title,
-                                style = defaultTextStyle,
-                                fontSize = 18.sp,
-                                color = Color.White,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                            )
-                        }
-                        AnimatedVisibility(
-                            visible = visibility > 0.89f,
-                            enter = fadeIn() + expandHorizontally(),
-                            exit = fadeOut() + shrinkHorizontally(),
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        IconButton(
+                            onClick = {
+                                val sendIntent = Intent().apply {
+                                    action = Intent.ACTION_SEND
+                                    putExtra(Intent.EXTRA_TEXT, state.anime?.malUrl)
+                                    type = "text/plain"
+                                }
+                                val shareIntent = Intent.createChooser(sendIntent, null)
+                                context.startActivity(shareIntent)
+                            },
                             modifier = Modifier.padding(end = 8.dp)
                         ) {
-                            IconButton(
-                                onClick = {
-                                    val sendIntent = Intent().apply {
-                                        action = Intent.ACTION_SEND
-                                        putExtra(Intent.EXTRA_TEXT, state.anime?.malUrl)
-                                        type = "text/plain"
-                                    }
-                                    val shareIntent = Intent.createChooser(sendIntent, null)
-                                    context.startActivity(shareIntent)
-                                }
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Share,
-                                    contentDescription = null,
-                                    tint = Color.White
-                                )
-                            }
+                            Icon(
+                                imageVector = Icons.Default.Share,
+                                contentDescription = null,
+                                tint = Color.White
+                            )
                         }
                     }
                 }
@@ -367,6 +421,7 @@ fun DetailScreen(
                                 fontSize = 10.sp,
                                 color = GraniteGray,
                                 modifier = Modifier.clickRipple {
+                                    showInfo = context.getString(R.string.synopsis)
                                     scope.launch { sheetState.show() }
                                 }
                             )
@@ -381,14 +436,14 @@ fun DetailScreen(
                             fontFamily = interFontFamily,
                             overflow = TextOverflow.Ellipsis
                         )
-                        Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(24.dp))
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = stringResource(R.string.character),
+                                text = stringResource(R.string.characters),
                                 style = defaultTextStyle,
                                 fontSize = 16.sp,
                                 color = DarkSlateBlue
@@ -399,6 +454,7 @@ fun DetailScreen(
                                 fontSize = 10.sp,
                                 color = GraniteGray,
                                 modifier = Modifier.clickRipple {
+                                    showInfo = context.getString(R.string.character_voice_actor)
                                     scope.launch { sheetState.show() }
                                 }
                             )
@@ -406,16 +462,62 @@ fun DetailScreen(
                     }
                     Spacer(modifier = Modifier.height(8.dp))
                     LazyRow {
-                        val characters = state.characters.filterIndexed { i, _ -> i < 10 }
-                        itemsIndexed(characters) { i, character ->
-                            CharacterItem(
-                                character = character,
-                                modifier = Modifier.padding(
-                                    start = if (i == 0) 16.dp else 0.dp,
-                                    end = 16.dp
-                                )
-                            )
+                        val characters = state.characters.filterIndexed { i, _ -> i < 5 }
+                        item {
+                            Spacer(modifier = Modifier.width(16.dp))
                         }
+                        items(characters) { character ->
+                            CharacterVoiceActorItem(
+                                name = character.name,
+                                image = character.image,
+                            )
+                            Spacer(modifier = Modifier.width(if (characters.last() == character) 16.dp else 8.dp))
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(24.dp))
+                    Text(
+                        text = stringResource(R.string.genres),
+                        style = defaultTextStyle,
+                        fontSize = 16.sp,
+                        color = DarkSlateBlue,
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    LazyRow {
+                        val genres = getGenresImage(anime.genres)
+                        item {
+                            Spacer(modifier = Modifier.width(16.dp))
+                        }
+                        itemsIndexed(genres) { i, genre ->
+                            Image(
+                                painter = painterResource(genre),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .width(165.dp)
+                                    .height(94.dp)
+                            )
+                            Spacer(modifier = Modifier.width(if (i == genres.lastIndex) 16.dp else 8.dp))
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(24.dp))
+                    Text(
+                        text = stringResource(R.string.reviews),
+                        style = defaultTextStyle,
+                        fontSize = 16.sp,
+                        color = DarkSlateBlue,
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    state.reviews.forEach { review ->
+                        ReviewItem(
+                            review = review,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp)
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(DarkSlateBlue)
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
                     }
                 }
             }
