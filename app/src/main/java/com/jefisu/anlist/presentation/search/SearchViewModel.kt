@@ -32,7 +32,7 @@ class SearchViewModel @Inject constructor(
         combine(query, searchResult, isLoading, error) { query, searchResult, isLoading, error ->
             SearchState(
                 query = query,
-                searchResult = searchResult,
+                searchResult = searchResult.sortedByDescending { it.rate },
                 isLoading = isLoading,
                 error = error
             )
