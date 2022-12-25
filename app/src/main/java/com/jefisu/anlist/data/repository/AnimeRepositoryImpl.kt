@@ -1,6 +1,5 @@
 package com.jefisu.anlist.data.repository
 
-import com.jefisu.anlist.BuildConfig
 import com.jefisu.anlist.R
 import com.jefisu.anlist.core.util.Resource
 import com.jefisu.anlist.core.util.UiText
@@ -11,7 +10,7 @@ import com.jefisu.anlist.data.dto.jikan_moe.character.CharactersResponse
 import com.jefisu.anlist.data.dto.jikan_moe.recommendations.RecommendationsResponse
 import com.jefisu.anlist.data.dto.jikan_moe.review.ReviewResponse
 import com.jefisu.anlist.data.dto.jikan_moe.search.SearchResponse
-import com.jefisu.anlist.data.dto.the_movie_db.TheMovieResponse
+import com.jefisu.anlist.data.dto.kitsu.KitsuResponse
 import com.jefisu.anlist.domain.model.*
 import com.jefisu.anlist.domain.model.mapper.*
 import com.jefisu.anlist.domain.repository.AnimeRepository
@@ -19,6 +18,7 @@ import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.*
 import io.ktor.client.request.*
+import io.ktor.http.*
 import java.io.IOException
 
 class AnimeRepositoryImpl(
@@ -112,14 +112,14 @@ class AnimeRepositoryImpl(
     }
 
     override suspend fun getImageBackground(name: String): String {
-        val response = client.get {
-            url("https://api.themoviedb.org/3/search/tv")
-            parameter("api_key", BuildConfig.API_KEY)
-            parameter("query", name)
-        }
-        val imageKey = response.body<TheMovieResponse>()
-            .results.firstOrNull { it.name.contains(name, true) }
-            ?.backdropPath ?: return ""
-        return "https://image.tmdb.org/t/p/w500/$imageKey"
+        return client.get {
+            url("https://kitsu.io/api/edge/anime")
+            header(HttpHeaders.Accept, "*/*")
+            parameter("fields[anime]", "canonicalTitle,coverImage")
+            parameter("filter[text]", name)
+        }.body<KitsuResponse>()
+            .data.firstOrNull { it.attributes.canonicalTitle.equals(name, ignoreCase = true) }
+            ?.attributes?.coverImage
+            ?.original.orEmpty()
     }
 }

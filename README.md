@@ -8,12 +8,6 @@ Anime app built with Jetpack Compose
     <img src="preview/search.png" width="250">
 </p>
 
-## Required
-Before running the application, it is necessary to generate an api key at [The Movie DB](https://www.themoviedb.org/) and add it in the local.properties file:
-```bash
-  api_key=your_api_key
-```
-
 ## Development Roadmap
 
 - Jetpack Compose
@@ -23,6 +17,7 @@ Before running the application, it is necessary to generate an api key at [The M
 - Compose Destinations
 - Ktor
 - JikaMoe (Unofficial MyAnimeList API)
+- Kitsu API
 
 ## Features
 
