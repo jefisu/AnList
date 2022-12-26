@@ -5,13 +5,12 @@ import androidx.lifecycle.viewModelScope
 import com.jefisu.anlist.core.util.Resource
 import com.jefisu.anlist.domain.model.Anime
 import com.jefisu.anlist.domain.repository.AnimeRepository
-import com.jefisu.anlist.presentation.home.util.mapByGenre
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
@@ -34,10 +33,7 @@ class HomeViewModel @Inject constructor(
             progress = progress,
             isLoading = isLoading,
             topAiringAnime = animesTopFive,
-            animesByGenre = topAiringAnime
-                .dropWhile { animesTopFive.contains(it) }
-                .mapByGenre()
-                .filterValues { it.size == 10 }
+            animes = topAiringAnime.dropWhile { animesTopFive.contains(it) }
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), HomeState())
 
