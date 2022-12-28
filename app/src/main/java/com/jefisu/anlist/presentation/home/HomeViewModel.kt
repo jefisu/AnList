@@ -6,11 +6,11 @@ import com.jefisu.anlist.core.util.Resource
 import com.jefisu.anlist.domain.model.Anime
 import com.jefisu.anlist.domain.repository.AnimeRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(

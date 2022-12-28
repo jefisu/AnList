@@ -37,7 +37,6 @@ import com.jefisu.anlist.core.presentation.CustomIcon
 import com.jefisu.anlist.core.presentation.GradientProgressbar
 import com.jefisu.anlist.core.presentation.LoadingGif
 import com.jefisu.anlist.data.AnimeConstants
-import com.jefisu.anlist.presentation.destinations.DetailScreenDestination
 import com.jefisu.anlist.presentation.destinations.SearchScreenDestination
 import com.jefisu.anlist.presentation.destinations.SeasonScreenDestination
 import com.jefisu.anlist.presentation.home.components.AnimeByGenreItem
@@ -89,7 +88,7 @@ fun HomeScreen(
             } else 1f
         }
     }
-    if(!state.isLoading && state.topAiringAnime.isNotEmpty() && state.animes.isNotEmpty()) {
+    if (!state.isLoading && state.topAiringAnime.isNotEmpty() && state.animes.isNotEmpty()) {
         Box {
             Box(
                 modifier = Modifier
@@ -143,7 +142,7 @@ fun HomeScreen(
                                 .weight(1f)
                                 .padding(start = 16.dp)
                         )
-                        AnimatedVisibility(visible = visibility ==1f) {
+                        AnimatedVisibility(visible = visibility == 1f) {
                             IconButton(
                                 onClick = { navigator.navigate(SearchScreenDestination()) }
                             ) {
@@ -210,13 +209,14 @@ fun HomeScreen(
                         items(state.topAiringAnime) {
                             CustomCard(
                                 anime = it,
-                                onClick = {
-                                    navigator.navigate(DetailScreenDestination(it.malId))
-                                },
+                                onClick = navigator::navigate,
                                 paddingValues = PaddingValues(
                                     start = if (it == state.topAiringAnime.first()) 16.dp else 0.dp,
                                     end = 12.dp
-                                )
+                                ),
+                                imageModifier = Modifier
+                                    .width(211.dp)
+                                    .height(119.dp)
                             )
                         }
                     }

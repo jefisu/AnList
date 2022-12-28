@@ -18,24 +18,24 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.jefisu.anlist.domain.model.Anime
+import com.jefisu.anlist.presentation.destinations.DetailScreenDestination
 import com.jefisu.anlist.ui.theme.DarkSlateBlue
 import com.jefisu.anlist.ui.theme.PhilippineGray
 import com.jefisu.anlist.ui.theme.clickRipple
 import com.jefisu.anlist.ui.theme.defaultTextStyle
+import com.ramcosta.composedestinations.spec.Direction
 
 @Composable
 fun CustomCard(
     anime: Anime,
-    onClick: () -> Unit,
+    onClick: (Direction) -> Unit,
+    imageModifier: Modifier = Modifier,
     paddingValues: PaddingValues = PaddingValues(),
-    modifier: Modifier = Modifier,
-    shape: Shape = RoundedCornerShape(8.dp),
-    size: DpSize = DpSize(211.dp, 119.dp)
+    shape: Shape = RoundedCornerShape(8.dp)
 ) {
     var heightRow by remember { mutableStateOf(0.dp) }
     val density = LocalDensity.current
@@ -43,19 +43,18 @@ fun CustomCard(
         modifier = Modifier
             .padding(paddingValues)
             .clip(shape)
-            .clickRipple { onClick() }
-            .then(modifier)
+            .clickRipple { onClick(DetailScreenDestination(anime.malId)) }
     ) {
         Box {
             AsyncImage(
                 model = anime.poster,
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
-                modifier = Modifier.size(size)
+                modifier = imageModifier
             )
             Box(
                 modifier = Modifier
-                    .size(size)
+                    .matchParentSize()
                     .background(
                         Brush.verticalGradient(
                             listOf(Color.Transparent, Color.Black.copy(0.9f))
@@ -103,7 +102,7 @@ fun CustomCard(
                     style = defaultTextStyle,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.width(size.width - 24.dp)
+                    modifier = Modifier.padding(end = 12.dp)
                 )
                 Text(
                     text = anime.studios.joinToString().ifBlank { "Unidentified studio" },
@@ -111,7 +110,7 @@ fun CustomCard(
                     fontSize = 10.sp,
                     color = PhilippineGray,
                     maxLines = 1,
-                    modifier = Modifier.width(size.width - 24.dp)
+                    modifier = Modifier.padding(end = 12.dp)
                 )
             }
         }

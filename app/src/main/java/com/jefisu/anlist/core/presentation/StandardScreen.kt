@@ -14,13 +14,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import com.jefisu.anlist.R
 import com.jefisu.anlist.core.util.UiText
 import com.jefisu.anlist.core.util.isOdd
 import com.jefisu.anlist.domain.model.Anime
-import com.jefisu.anlist.presentation.destinations.DetailScreenDestination
 import com.jefisu.anlist.ui.theme.DarkSlateBlue
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
@@ -82,10 +80,7 @@ fun StandardScreen(
                 }
                 CustomCard(
                     anime = anime,
-                    size = DpSize(width = 181.dp, height = 101.dp),
-                    onClick = {
-                        navigator.navigate(DetailScreenDestination(anime.malId))
-                    },
+                    onClick = navigator::navigate,
                     paddingValues = PaddingValues(
                         top = if (index in 0..1) 8.dp else 0.dp,
                         bottom = when {
@@ -93,7 +88,9 @@ fun StandardScreen(
                             (!isOdd && index in penultimateIndex..lastIndex) -> 8.dp
                             else -> 0.dp
                         }
-                    )
+                    ),
+                    imageModifier = Modifier
+                        .height(101.dp)
                 )
             }
         }
